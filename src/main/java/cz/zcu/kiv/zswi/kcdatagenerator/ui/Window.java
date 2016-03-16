@@ -1,5 +1,6 @@
-package UI;
+package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
+import java.io.File;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,12 +11,12 @@ import javafx.stage.Stage;
 
 public class Window extends Application {
 
-	// path to FXML file - path relative to classpath 
-	private static final String WINDOW_XML = "Window.fxml";
-	
+	// path to FXML file - path relative to classpath
+	private static final String WINDOW_XML =  File.separator + "fxml" + File.separator + "Window.fxml";
+
 	// width of the window
 	private static final double WINDOW_WIDTH = 300;
-	
+
 	// height of the window
 	private static final double WINDOW_HEIGHT = 250;
 
@@ -31,38 +32,38 @@ public class Window extends Application {
 		primaryStage.setTitle("Table demo with FXML");
 		// obtains scene generated from FXML file
 		primaryStage.setScene(createScene());
-		primaryStage.show();		
+		primaryStage.show();
 	}
-	
+
 	private Scene createScene() {
 		// loading FXML file
 		loader = new FXMLLoader(getClass().getResource(WINDOW_XML));
-						
+
 		Pane rootPane = null;
-		
+
 		try {
 			// obtaining root pane from loaded FXML
-			rootPane = (Pane)loader.load();			
+			rootPane = (Pane)loader.load();
 			// when FXML is not found or cannot be parsed, an exception occurs
 			// this will display dialog with information about exception
 			// when debugging, it is better to replace this with
-			// e.printStackTrace to have a better information about exception 
+			// e.printStackTrace to have a better information about exception
 		} catch (Exception e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Window cannot be created");
 			alert.setHeaderText("Cannot load XML file with definition of main window");
-			alert.setContentText("file: " + WINDOW_XML + "\n" + 
+			alert.setContentText("file: " + WINDOW_XML + "\n" +
 					             "Error: " + e.getMessage() + "\n" +
-					             "Exception: " + e.getClass().getName());			
+					             "Exception: " + e.getClass().getName());
 			alert.showAndWait();
 			System.exit(1);
 		}
-		
+
 		// creating scene from loaded panel
 		Scene scene = new Scene(rootPane, WINDOW_WIDTH, WINDOW_HEIGHT);
 		// removing all CSS from the scene - only default look is used
 		scene.getStylesheets().clear();
-		
+
 		return scene;
 	}
 }

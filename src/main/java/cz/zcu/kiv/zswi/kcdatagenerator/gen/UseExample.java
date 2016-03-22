@@ -39,6 +39,13 @@ public class UseExample {
 			System.out.println(e);
 		}
 
+		//vypis uzivatelu
+		List<GeneratedUser> users = g.getUsers();
+		for(GeneratedUser gu: users) {
+			System.out.println(gu.getFirstName() + " " + gu.getLastName() + " " + gu.getPassword());
+		}
+
+
 		//generovani emailu (WIP) - uz to funguje, ale pozor na port
 		/*
 
@@ -55,4 +62,5 @@ public class UseExample {
 
 		 */
 	}
+
 }

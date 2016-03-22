@@ -17,7 +17,7 @@ public class NameGenerator {
 	int lastNameOffset = 0;
 	long skip = 0;
 
-	public static final String DEFAULT_DICT_PATH = File.separator + "dicts" + File.separator;
+	public static final String DEFAULT_DICT_PATH = "/dicts/";
 
 	/**
 	 *
@@ -63,11 +63,14 @@ public class NameGenerator {
 		skip = (int) (Math.random() * 100);
 	}
 
-	public String getFullName() {
-		firstNameOffset = (int) ((skip + firstNameOffset) % Integer.MAX_VALUE);
+	public String getLastName() {
 		lastNameOffset = (int) ((skip + lastNameOffset) % Integer.MAX_VALUE);
-		return firstNames.get(firstNameOffset % firstNames.size())
-				+ " " + lastNames.get(lastNameOffset % lastNames.size());
+		return lastNames.get(lastNameOffset % lastNames.size());
+	}
+
+	public String getFirstName() {
+		firstNameOffset = (int) ((skip + firstNameOffset) % Integer.MAX_VALUE);
+		return firstNames.get(firstNameOffset % firstNames.size());
 	}
 
 	public String getLogin(String name) {

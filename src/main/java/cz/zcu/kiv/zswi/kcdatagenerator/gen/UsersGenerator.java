@@ -13,6 +13,7 @@ public class UsersGenerator {
 	private final NameGenerator nameGenerator;
 	private User[] users;
 	private final List<String> logins = new ArrayList<>();
+	private final List<GeneratedUser> generatedUsers = new ArrayList<>();
 
 
 	UsersGenerator(ApiClient client, String domainId, NameGenerator nameGenerator) {
@@ -35,19 +36,29 @@ public class UsersGenerator {
 
 	private User generate() {
 		User u = new User();
-		String fullName = nameGenerator.getFullName();
+		String passwd = "testTest333";
+		String firstName = nameGenerator.getFirstName();
+		String lastName = nameGenerator.getLastName();
+
+		String fullName = firstName + " " + lastName;
 		String login = nameGenerator.getLogin(fullName);
 		logins.add(login);
 
 		u.setFullName(fullName);
 		u.setLoginName(login);
-		u.setPassword("testTest333");
+		u.setPassword(passwd);
 		u.setDomainId(domainId);
+
+		generatedUsers.add(new GeneratedUser(firstName, lastName, passwd));
 		return u;
 	}
 
 	public Error[] save() {
 		return apiClient.getApi(Users.class).create(users).getErrors();
+	}
+
+	List<GeneratedUser> getUsers() {
+		return generatedUsers;
 	}
 
 }

@@ -1,6 +1,5 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
-import java.io.File;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,7 +11,7 @@ import javafx.stage.Stage;
 public class Window extends Application {
 
 	// path to FXML file - path relative to classpath
-	private static final String WINDOW_XML =  File.separator + "fxml" + File.separator + "Window.fxml";
+	private static final String WINDOW_XML =  "/fxml/Window.fxml";
 
 	// width of the window
 	private static final double WINDOW_WIDTH = 300;
@@ -29,7 +28,7 @@ public class Window extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("Table demo with FXML");
+		primaryStage.setTitle("KerioConnect generator");
 		// obtains scene generated from FXML file
 		primaryStage.setScene(createScene());
 		primaryStage.show();
@@ -37,7 +36,7 @@ public class Window extends Application {
 
 	private Scene createScene() {
 		// loading FXML file
-		loader = new FXMLLoader(getClass().getResource(WINDOW_XML));
+		loader = new FXMLLoader(getClass().getResource(WINDOW_XML));// loading CSS file
 
 		Pane rootPane = null;
 

@@ -1,0 +1,40 @@
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<!-- creating root of the scene -->
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.zswi.kcdatagenerator.ui.LoginController">
+	<top>
+		<MenuBar>
+			<Menu text="_Action" mnemonicParsing="true">
+				<items>
+					<MenuItem text="_Exit" fx:id="exit" onAction="#handleExitAction" />
+				</items>
+			</Menu>
+		</MenuBar>
+	</top>
+	<center>
+		<GridPane xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+		    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+		    <Label style="-fx-font: NORMAL 20 Arial;" text="Login"                
+		        GridPane.columnIndex="0" GridPane.rowIndex="0">
+		    </Label>
+		 
+		    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+		 
+		    <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+		    
+		    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+		 
+		    <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+		        
+		    <HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="1" GridPane.rowIndex="4">
+		        <Button text="Login" onAction="#handleLoginAction"/>
+		    </HBox>
+		    
+		</GridPane>
+
+	</center>
+</BorderPane>

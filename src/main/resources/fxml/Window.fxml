@@ -8,7 +8,7 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.zswi.kcdatagenerator.ui.WindowController">
 	<top>
 		<MenuBar>
-			<Menu text="_Akce" mnemonicParsing="true">
+			<Menu text="_Action" mnemonicParsing="true">
 				<items>
 					<MenuItem text="_Exit" fx:id="exit" onAction="#handleExitAction" />
 				</items>
@@ -18,16 +18,16 @@
 	<center>
 		<GridPane xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
 		    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-		    <Label style="-fx-font: NORMAL 20 Arial;" text="Uživatelé"                
+		    <Label style="-fx-font: NORMAL 20 Arial;" text="Users"                
 		        GridPane.columnIndex="0" GridPane.rowIndex="0">
 		    </Label>
 		 
-		    <Label text="Počet:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+		    <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 		 
 		    <TextField fx:id="userCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 		        
 		    <HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="1" GridPane.rowIndex="4">
-		        <Button text="Generovat" onAction="#handleUserGenerationAction"/>
+		        <Button text="Generate" onAction="#handleUserGenerationAction"/>
 		    </HBox>
 		    
 		</GridPane>

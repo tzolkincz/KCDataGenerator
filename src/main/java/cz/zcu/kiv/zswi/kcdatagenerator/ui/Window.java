@@ -1,5 +1,10 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
+import com.kerio.lib.json.api.connect.admin.iface.Domains;
+import com.kerio.lib.json.api.connect.admin.struct.Domain;
+import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;
+
+import cz.zcu.kiv.zswi.kcdatagenerator.gen.ApiClient;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,7 +16,7 @@ import javafx.stage.Stage;
 public class Window extends Application {
 
 	// path to FXML file - path relative to classpath
-	private static final String WINDOW_XML =  "/fxml/Window.fxml";
+	private static final String LOGIN_WINDOW_XML =  "/fxml/Login.fxml";
 
 	// width of the window
 	private static final double WINDOW_WIDTH = 300;
@@ -21,23 +26,28 @@ public class Window extends Application {
 
 	// loader of FXML file
 	private FXMLLoader loader;
+	
+	private Scene generation, login;
 
+	private Stage primaryStage;
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("KerioConnect generator");
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("KerioConnect generator");
 		// obtains scene generated from FXML file
-		primaryStage.setScene(createScene());
-		primaryStage.show();
+		this.primaryStage.setScene(createScene());
+		this.primaryStage.show();
 	}
 
 	private Scene createScene() {
 		// loading FXML file
-		loader = new FXMLLoader(getClass().getResource(WINDOW_XML));// loading CSS file
-
+		loader = new FXMLLoader(getClass().getResource(LOGIN_WINDOW_XML));// loading CSS file
+		
 		Pane rootPane = null;
 
 		try {
@@ -51,7 +61,7 @@ public class Window extends Application {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Window cannot be created");
 			alert.setHeaderText("Cannot load XML file with definition of main window");
-			alert.setContentText("file: " + WINDOW_XML + "\n" +
+			alert.setContentText("file: " + LOGIN_WINDOW_XML + "\n" +
 					             "Error: " + e.getMessage() + "\n" +
 					             "Exception: " + e.getClass().getName());
 			alert.showAndWait();
@@ -59,10 +69,11 @@ public class Window extends Application {
 		}
 
 		// creating scene from loaded panel
-		Scene scene = new Scene(rootPane, WINDOW_WIDTH, WINDOW_HEIGHT);
+		generation = new Scene(rootPane, WINDOW_WIDTH, WINDOW_HEIGHT);
 		// removing all CSS from the scene - only default look is used
-		scene.getStylesheets().clear();
+		generation.getStylesheets().clear();
 
-		return scene;
+		return generation;
 	}
+	
 }

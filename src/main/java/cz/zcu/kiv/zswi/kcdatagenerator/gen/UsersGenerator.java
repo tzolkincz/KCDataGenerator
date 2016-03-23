@@ -16,7 +16,7 @@ public class UsersGenerator {
 	private final List<GeneratedUser> generatedUsers = new ArrayList<>();
 
 
-	UsersGenerator(ApiClient client, String domainId, NameGenerator nameGenerator) {
+	public UsersGenerator(ApiClient client, String domainId, NameGenerator nameGenerator) {
 		this.apiClient = client;
 		this.domainId = domainId;
 		this.nameGenerator = nameGenerator;
@@ -57,7 +57,7 @@ public class UsersGenerator {
 		return apiClient.getApi(Users.class).create(users).getErrors();
 	}
 
-	List<GeneratedUser> getUsers() {
+	public List<GeneratedUser> getUsers() {
 		return generatedUsers;
 	}
 

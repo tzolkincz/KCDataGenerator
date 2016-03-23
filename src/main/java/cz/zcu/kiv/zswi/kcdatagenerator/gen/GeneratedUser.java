@@ -5,11 +5,13 @@ public class GeneratedUser {
 	private final String firstName;
 	private final String lastName;
 	private final String password;
+	private final String username;
 
-	public GeneratedUser(String firstName, String lastName, String password) {
+	public GeneratedUser(String firstName, String lastName, String password, String username) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.password = password;
+		this.username = username;
 	}
 
 	public String getFirstName() {
@@ -22,6 +24,10 @@ public class GeneratedUser {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public String getUsername() {
+		return username;
 	}
 
 }

@@ -49,7 +49,7 @@ public class UsersGenerator {
 		u.setPassword(passwd);
 		u.setDomainId(domainId);
 
-		generatedUsers.add(new GeneratedUser(firstName, lastName, passwd));
+		generatedUsers.add(new GeneratedUser(firstName, lastName, passwd, login));
 		return u;
 	}
 

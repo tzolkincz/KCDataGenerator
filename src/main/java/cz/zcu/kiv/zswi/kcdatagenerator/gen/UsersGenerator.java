@@ -14,12 +14,18 @@ public class UsersGenerator {
 	private User[] users;
 	private final List<String> logins = new ArrayList<>();
 	private final List<GeneratedUser> generatedUsers = new ArrayList<>();
+	public static final String DEFAULT_PASSWORD = "u";
+	private final String passwd;
 
+	public UsersGenerator(ApiClient apiClient, String domainId, NameGenerator nameGenerator) {
+		this(apiClient, domainId, nameGenerator, DEFAULT_PASSWORD);
+	}
 
-	public UsersGenerator(ApiClient client, String domainId, NameGenerator nameGenerator) {
+	public UsersGenerator(ApiClient client, String domainId, NameGenerator nameGenerator, String passwd) {
 		this.apiClient = client;
 		this.domainId = domainId;
 		this.nameGenerator = nameGenerator;
+		this.passwd = passwd;
 	}
 
 	public List<String> getUserLogins() {
@@ -36,7 +42,6 @@ public class UsersGenerator {
 
 	private User generate() {
 		User u = new User();
-		String passwd = "testTest333";
 		String firstName = nameGenerator.getFirstName();
 		String lastName = nameGenerator.getLastName();
 

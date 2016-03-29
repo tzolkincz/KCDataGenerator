@@ -23,14 +23,26 @@
 		    </Label>
 		 
 		    <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-		 
 		    <TextField fx:id="userCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-		        
-		    <HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="1" GridPane.rowIndex="4">
-		        <Button text="Generate" onAction="#handleUserGenerationAction"/>
-		    </HBox>
+		    
+		    <Label style="-fx-font: NORMAL 20 Arial;" text="Emails"                
+		        GridPane.columnIndex="3" GridPane.rowIndex="0">
+		    </Label>
+		    
+		    <Label text="Count:" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+		    <TextField fx:id="emailCountData" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+		    
+		    <CheckBox fx:id="attachment" text="Attachment" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+		    <CheckBox fx:id="randomEncoding" text="Random encoding" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+		    <CheckBox fx:id="flag" text="Random flags" GridPane.columnIndex="4" GridPane.rowIndex="5" />
 		    
 		</GridPane>
-
 	</center>
+	<bottom>
+		<Separator fx:id="separator"/>
+		<HBox spacing="10" alignment="center">
+			<padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+		        <Button text="Generate" onAction="#handleUserGenerationAction"/>
+		    </HBox>
+	</bottom>
 </BorderPane>

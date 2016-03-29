@@ -26,9 +26,9 @@
 		 
 		    <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 		    
-		    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+		    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 		 
-		    <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+		    <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" onAction="#handleLoginAction" />
 		        
 		    <HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="1" GridPane.rowIndex="4">
 		        <Button text="Login" onAction="#handleLoginAction"/>

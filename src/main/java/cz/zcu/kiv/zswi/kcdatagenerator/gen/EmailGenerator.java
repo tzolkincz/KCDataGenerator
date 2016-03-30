@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -40,9 +41,10 @@ public class EmailGenerator {
 		}
 
 		ExecutorService threadPool = Executors.newCachedThreadPool();
+		List<Future<Exception>> results = new ArrayList<>();
 
 		for (GeneratedUser user : users) {
-			threadPool.submit(() -> {
+			Future<Exception> res = threadPool.submit(() -> {
 				try (ExchangeService service = new ExchangeService()) {
 					String userAddr = user.getUsername() + "@" + domain;
 
@@ -100,14 +102,22 @@ public class EmailGenerator {
 
 					}
 				} catch (Exception e) {
-					System.out.println(e);
+					return e;
 				}
+				return null;
 			});
+			results.add(res);
 		}
 
 		long ts = System.currentTimeMillis();
 		threadPool.shutdown();
 		threadPool.awaitTermination(10, TimeUnit.DAYS);
+
+		for (Future<Exception> f : results) {
+			if (f.get() != null) {
+				throw new Exception(f.get());
+			}
+		}
 		System.out.println("Emails saved in: " + (System.currentTimeMillis() - ts) + " ms");
 
 	}

@@ -22,19 +22,23 @@
 		        GridPane.columnIndex="0" GridPane.rowIndex="0">
 		    </Label>
 		 
-		    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-		 
-		    <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-		    
-		    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-		 
-		    <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" onAction="#handleLoginAction" />
-		        
-		    <HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="1" GridPane.rowIndex="4">
-		        <Button text="Login" onAction="#handleLoginAction"/>
-		    </HBox>
-		    
-		</GridPane>
+               <Label text="URL:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+             	<TextField fx:id="url" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-	</center>
+				<Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>            
+             	<TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+             
+             <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+             <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="3" onAction="#handleLoginAction" />
+                 
+           </GridPane>
+ 
+       </center>
+     <bottom>
+         <HBox spacing="10" alignment="center">
+             <padding><Insets right="10" bottom="10" left="10"/></padding>
+                 <Button text="Login" onAction="#handleLoginAction"/>
+             </HBox>
+     </bottom>
+
 </BorderPane>

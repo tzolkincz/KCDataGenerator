@@ -2,6 +2,7 @@ package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -83,7 +84,7 @@ public class WindowController implements Initializable {
 		alert.showAndWait();
 	}
 
-	private void generate() {
+	private void generate() throws IOException, URISyntaxException {
 
 		//generovani uzivatelu
 		//NameGenerator prijma jako argumenty cesty ke slovnikum (fist, last names).

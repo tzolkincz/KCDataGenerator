@@ -27,6 +27,9 @@ public class LoginController {
 	private PasswordField password;
 	
 	@FXML
+	private TextField url;
+	
+	@FXML
     private void handleExitAction(ActionEvent event) {
         System.exit(0);
         Platform.exit();
@@ -43,7 +46,7 @@ public class LoginController {
 		ApiClient client = new ApiClient();
 		
 		try {
-			client.login("http://localhost:4040", username.getText(), password.getText());
+			client.login(url.getText(), username.getText(), password.getText());
 		} catch(Exception e) {
 			
 		}

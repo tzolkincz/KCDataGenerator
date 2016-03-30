@@ -3,11 +3,7 @@ package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 import com.kerio.lib.json.api.connect.admin.iface.Domains;
 import com.kerio.lib.json.api.connect.admin.struct.Domain;
 import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;
-import java.net.URI;
 import java.util.List;
-import microsoft.exchange.webservices.data.core.ExchangeService;
-import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
-import microsoft.exchange.webservices.data.credential.WebCredentials;
 
 public class UseExample {
 
@@ -48,8 +44,8 @@ public class UseExample {
 
 		String domainName = "localhost";
 		EmailGenerator eg = new EmailGenerator("http://localhost:81/Ews/Exchange.asmx", users, domainName);
-		eg.generateAndSave(5, 1);
-		eg.generateAndSave(5, 1);
+		eg.generateAndSave(5, 1, true, true, true, true);
+		eg.generateAndSave(5, 1, true, true, true, true);
 
 	}
 

@@ -1,15 +1,25 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
-
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.swing.event.ChangeListener;
+
+import cz.zcu.kiv.zswi.kcdatagenerator.gen.EmailGenerator;
+import cz.zcu.kiv.zswi.kcdatagenerator.gen.GeneratedUser;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.NameGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.UsersGenerator;
+import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,121 +28,254 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.effect.Effect;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class WindowController implements Initializable {
 
-	@FXML
-	private TextField userCountData;
+    @FXML
+    private BorderPane windowRootPane;
 
-	@FXML
-	private Text actiontarget;
-	
-	@FXML
-	private TextField emailCountData;
-	
-	@FXML
-	private CheckBox attachment;
-	
-	@FXML
-	private CheckBox randomEncoding;
-	
-	@FXML
-	private CheckBox flag;
+    @FXML
+    private TextField userCountData;
 
-	private static final int DEFAULT_USER_COUNT = 10;
-	private int userCount = DEFAULT_USER_COUNT;
+    @FXML
+    private Text actiontarget;
 
-	@FXML
+    @FXML
+    private TextField emailCountData;
+
+    @FXML
+    private CheckBox attachment;
+
+    @FXML
+    private CheckBox randomEncoding;
+
+    @FXML
+    private CheckBox flag;
+
+    @FXML
+    private CheckBox externalSender;
+
+    @FXML
+    private CheckBox advanced;
+
+    @FXML
+    private CheckBox users;
+
+    @FXML
+    private CheckBox emails;
+
+    @FXML
+    private Label firstNamesLabel;
+
+    @FXML
+    private Label lastNamesLabel;
+
+    @FXML
+    private GridPane usersTable;
+
+    @FXML
+    private GridPane emailsTable;
+
+    @FXML
+    private ProgressBar progressBar;
+
+    @FXML
+    private Slider emailFoldersSlider;
+
+    @FXML
+    private Label emailFoldersSliderLabel;
+
+    private static final int DEFAULT_USER_COUNT = 10;
+    private static int userCount, emailCount;
+    private Stage windowStage;
+
+    @FXML
     private void handleUserGenerationAction(ActionEvent event) {
-		checkUserCount();
-		printEmailGeneratorData();
-		//generate();
+
+        try {
+            generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
-	@FXML
+    @FXML
     private void handleExitAction(ActionEvent event) {
         System.exit(0);
         Platform.exit();
     }
 
-	private void checkUserCount() {
+    @FXML
+    private void handleAdvancedAction() {
+        if (advanced.isSelected()) {
 
-		this.userCountData.focusedProperty().addListener((arg0, oldValue, newValue) -> {
-			if(!newValue) {
-				if(this.userCountData.getText().isEmpty()) {
-					this.userCount = DEFAULT_USER_COUNT;
-				} else {
-					userCount = Integer.parseInt(this.userCountData.getText());
+        } else {
 
-					if(Math.signum((double)userCount) == -1.0) {
-						showNumberError();
-						this.userCountData.setText("");
-					}
-				}
-			}
-		});
-	}
+        }
+    }
 
-	private void showNumberError() {
-		Alert alert = new Alert(AlertType.WARNING);
-		alert.setTitle("Chyba - generování uživatelů");
-		alert.setHeaderText("Formát čísla");
-		alert.setContentText("Musíte zadat celé nezáporné číslo");
-		alert.showAndWait();
-	}
+    @FXML
+    public void handleUsersAction() {
+        if (users.isSelected()) {
+            usersTable.setVisible(true);
+            GridPane.setColumnIndex(emailsTable, 1);
+        } else {
+            usersTable.setVisible(false);
+            GridPane.setColumnIndex(emailsTable, 0);
+        }
+    }
 
-	private void generate() throws IOException, URISyntaxException {
+    @FXML
+    public void handleChooseFirstNameFileAction() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Open File");
+        File file = chooser.showOpenDialog(new Stage());
 
-		//generovani uzivatelu
-		//NameGenerator prijma jako argumenty cesty ke slovnikum (fist, last names).
-		//  Kdyz je null, pouziji se implicitni slovniky
-		UsersGenerator usersGenerator = null;
+        firstNamesLabel.setText(file.getName());
+    }
 
-		this.userCount = Integer.parseInt(this.userCountData.getText());
+    @FXML
+    public void handleChooseLastNameFileAction() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Open File");
+        File file = chooser.showOpenDialog(new Stage());
 
-		NameGenerator nameGenerator = new NameGenerator(null, null);
+        lastNamesLabel.setText(file.getName());
+    }
 
-		LoginData loginData = LoginDataSession.getInstance().getLoginData();
+    private void showNumberError() {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Chyba - generování uživatelů");
+        alert.setHeaderText("Formát čísla");
+        alert.setContentText("Musíte zadat celé nezáporné číslo");
+        alert.showAndWait();
+    }
 
-		usersGenerator = new UsersGenerator(loginData.client,loginData.domainId, nameGenerator);
-		usersGenerator.generate(this.userCount);
+    private void generate() throws IOException, URISyntaxException {
 
-		try {
-		    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/UsersTable.fxml"));
-		    Parent root1 = (Parent) fxmlLoader.load();
-		    GeneratedUsersController generatedUsersController = fxmlLoader.<GeneratedUsersController>getController();
+        checkInput();
 
-		    generatedUsersController.setData(usersGenerator.getUsers());
+        String domainName = "localhost";
+        userCount = Integer.parseInt(userCountData.getText());
+        emailCount = Integer.parseInt(emailCountData.getText());
 
-		    Stage stage = new Stage();
-		    stage.setTitle("Generated users");
-		    stage.setScene(new Scene(root1));
-		    stage.show();
-		} catch(Exception e) {
-		   e.printStackTrace();
-		}
+        //TODO file ne path
+        NameGenerator nameGenerator = new NameGenerator(null, null);
+        LoginData loginData = LoginDataSession.getInstance().getLoginData();
+        UsersGenerator usersGenerator = new UsersGenerator(loginData.client, loginData.domainId, nameGenerator);
 
-		//ulozeni a vypis chyb
-		for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : usersGenerator.save()) {
-			System.out.println(e);
-		}
-	}
-	
-	
+        List<GeneratedUser> generatedUsers = usersGenerator.getUsers();
+        generatedUsers.add(new GeneratedUser(null, null, null, loginData.username));
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
+        EmailGenerator eg = new EmailGenerator("http://localhost:81/Ews/Exchange.asmx", generatedUsers, domainName);
 
-	}
-	
-	private void printEmailGeneratorData() {
-		System.out.println("Number of emails: " + emailCountData.getText());
-		System.out.println("Attachment: " + attachment.isSelected());
-		System.out.println("Random encoding: " + randomEncoding.isSelected());
-		System.out.println("Flag: " + flag.isSelected());
-	}
+        Task<Void> task = new Task<Void>() {
+
+            @Override
+            public Void call() {
+                for (int i = 0; i < userCount; i++) {
+                    usersGenerator.generate(1);
+                    updateProgress(i, userCount + emailCount);
+//                    updateProgress(i, userCount);
+                }
+
+                for (int j = 0; j < emailCount; j++) {
+                    try {
+                        eg.generateAndSave(j, emailFoldersSlider.getValue(), flag.isSelected(), randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
+                    } catch (Exception e) {
+                        //TODO alert?
+                        e.printStackTrace();
+                    }
+                    updateProgress(j, userCount + emailCount);
+                }
+
+                return null;
+            }
+
+
+
+            @Override
+            protected void succeeded() {
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/UsersTable.fxml"));
+                    Parent root1 = (Parent) fxmlLoader.load();
+                    GeneratedUsersController generatedUsersController = fxmlLoader.<GeneratedUsersController> getController();
+
+                    generatedUsersController.setData(generatedUsers);
+
+                    Stage stage = new Stage();
+                    stage.setTitle("Generated users");
+                    stage.setScene(new Scene(root1));
+
+                    stage.setOnCloseRequest(e -> {
+                        updateProgress(0, userCount);
+                    });
+
+                    stage.show();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                updateProgress(userCount, userCount);
+            }
+        };
+
+        progressBar.progressProperty().bind(task.progressProperty());
+        new Thread(task).start();
+
+        // ulozeni a vypis chyb
+        for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : usersGenerator.save()) {
+            System.out.println(e);
+        }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        progressBar.setMaxWidth(Double.MAX_VALUE);
+        progressBar.setProgress(0);
+
+        emailFoldersSlider.setOnMouseDragged(e -> {
+            int percentage = (int)emailFoldersSlider.getValue();
+            emailFoldersSliderLabel.setText("Folders: " + percentage + "%");
+        });
+    }
+
+    public void checkInput() {
+        if (this.userCountData.getText().isEmpty()) {
+            this.userCountData.setText(Integer.toString(DEFAULT_USER_COUNT));
+        } else {
+            userCount = Integer.parseInt(this.userCountData.getText());
+            if (Math.signum((double) userCount) == -1.0) {
+                showNumberError();
+                this.userCountData.setText("");
+            }
+        }
+
+        if (this.emailCountData.getText().isEmpty()) {
+            this.emailCountData.setText(Integer.toString(DEFAULT_USER_COUNT));
+        } else {
+            emailCount = Integer.parseInt(this.emailCountData.getText());
+            if (Math.signum((double) emailCount) == -1.0) {
+                showNumberError();
+                this.emailCountData.setText("");
+            }
+        }
+    }
+
+    public void setStage(Stage stage) {
+        this.windowStage = stage;
+    }
 }

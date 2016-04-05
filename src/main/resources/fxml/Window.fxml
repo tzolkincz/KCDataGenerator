@@ -5,44 +5,68 @@
 <?import javafx.scene.text.*?>
 
 <!-- creating root of the scene -->
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.zswi.kcdatagenerator.ui.WindowController">
-	<top>
-		<MenuBar>
-			<Menu text="_Action" mnemonicParsing="true">
-				<items>
-					<MenuItem text="_Exit" fx:id="exit" onAction="#handleExitAction" />
-				</items>
-			</Menu>
-		</MenuBar>
-	</top>
-	<center>
-		<GridPane xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-		    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-		    <Label style="-fx-font: NORMAL 20 Arial;" text="Users"                
-		        GridPane.columnIndex="0" GridPane.rowIndex="0">
-		    </Label>
-		 
-		    <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-		    <TextField fx:id="userCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-		    
-		    <Label style="-fx-font: NORMAL 20 Arial;" text="Emails"                
-		        GridPane.columnIndex="3" GridPane.rowIndex="0">
-		    </Label>
-		    
-		    <Label text="Count:" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-		    <TextField fx:id="emailCountData" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
-		    
-		    <CheckBox fx:id="attachment" text="Attachment" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-		    <CheckBox fx:id="randomEncoding" text="Random encoding" GridPane.columnIndex="4" GridPane.rowIndex="4" />
-		    <CheckBox fx:id="flag" text="Random flags" GridPane.columnIndex="4" GridPane.rowIndex="5" />
-		    
-		</GridPane>
-	</center>
-	<bottom>
-		<Separator fx:id="separator"/>
-		<HBox spacing="10" alignment="center">
-			<padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-		        <Button text="Generate" onAction="#handleUserGenerationAction"/>
-		    </HBox>
-	</bottom>
+<BorderPane fx:id="windowRootPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.zswi.kcdatagenerator.ui.WindowController">
+    <top>
+        <MenuBar>
+            <Menu text="_Action" mnemonicParsing="true">
+                <items>
+                    <MenuItem text="_Exit" fx:id="exit" onAction="#handleExitAction" />
+                </items>
+            </Menu>
+        </MenuBar>
+    </top>
+    <left>
+        <GridPane xmlns:fx="http://javafx.com/fxml" alignment="top_center" hgap="10" vgap="10">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <Label style="-fx-font: NORMAL 20 Arial;" text="Settings"
+                GridPane.columnIndex="0" GridPane.rowIndex="0">
+            </Label>
+
+            <CheckBox fx:id="advanced" text="Advanced" GridPane.columnIndex="0" GridPane.rowIndex="1" onAction="#handleAdvancedAction" selected="true" />
+            <CheckBox fx:id="users" text="users" GridPane.columnIndex="0" GridPane.rowIndex="2" onAction="#handleUsersAction" selected="true" />
+            <CheckBox fx:id="emails" text="Emails" GridPane.columnIndex="0" GridPane.rowIndex="3" selected="true" />
+
+        </GridPane>
+    </left>
+    <center>
+        <GridPane xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <GridPane fx:id="usersTable" xmlns:fx="http://javafx.com/fxml" alignment="top_left" hgap="10" vgap="10" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label style="-fx-font: NORMAL 20 Arial;" text="Users" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+
+                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="userCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Button text="First names" onAction="#handleChooseFirstNameFileAction" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Label fx:id="firstNamesLabel" text="Not chosen" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Button text="Last names" onAction="#handleChooseLastNameFileAction" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <Label fx:id="lastNamesLabel" text="Not chosen" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+            </GridPane>
+            <GridPane fx:id="emailsTable" xmlns:fx="http://javafx.com/fxml" alignment="top_right" hgap="10" vgap="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label style="-fx-font: NORMAL 20 Arial;" text="Emails"
+                    GridPane.columnIndex="3" GridPane.rowIndex="0">
+                </Label>
+
+                <Label text="Count:" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                <TextField fx:id="emailCountData" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+
+                <CheckBox fx:id="attachment" text="Attachment" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                <CheckBox fx:id="randomEncoding" text="Random encoding" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                <CheckBox fx:id="flag" text="Random flags" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+                <CheckBox fx:id="externalSender" text="External sender in header" GridPane.columnIndex="4" GridPane.rowIndex="6" />
+
+                <Label fx:id="emailFoldersSliderLabel" text="Folders: 0%" style="; -fx-label-padding: 10 0 0 0;" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                <Slider fx:id="emailFoldersSlider" orientation="HORIZONTAL" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+            </GridPane>
+        </GridPane>
+    </center>
+    <bottom>
+        <Separator fx:id="separator"/>
+        <VBox spacing="10" alignment="center">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <ProgressBar fx:id="progressBar" prefHeight="25.0" />
+            <Button text="Generate" onAction="#handleUserGenerationAction"/>
+        </VBox>
+    </bottom>
 </BorderPane>

@@ -99,6 +99,7 @@ public class WindowController implements Initializable {
     private static final int DEFAULT_USER_COUNT = 10;
     private static int userCount, emailCount;
     private Stage windowStage;
+    private File firstnamesFile, lastnamesFile;
 
     @FXML
     private void handleUserGenerationAction(ActionEvent event) {
@@ -142,18 +143,18 @@ public class WindowController implements Initializable {
     public void handleChooseFirstNameFileAction() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open File");
-        File file = chooser.showOpenDialog(new Stage());
+        firstnamesFile = chooser.showOpenDialog(new Stage());
 
-        firstNamesLabel.setText(file.getName());
+        firstNamesLabel.setText(firstnamesFile.getName());
     }
 
     @FXML
     public void handleChooseLastNameFileAction() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open File");
-        File file = chooser.showOpenDialog(new Stage());
+        lastnamesFile = chooser.showOpenDialog(new Stage());
 
-        lastNamesLabel.setText(file.getName());
+        lastNamesLabel.setText(lastnamesFile.getName());
     }
 
     private void showNumberError() {
@@ -172,8 +173,7 @@ public class WindowController implements Initializable {
         userCount = Integer.parseInt(userCountData.getText());
         emailCount = Integer.parseInt(emailCountData.getText());
 
-        //TODO file ne path
-        NameGenerator nameGenerator = new NameGenerator(null, null);
+        NameGenerator nameGenerator = new NameGenerator(firstnamesFile.toPath(), lastnamesFile.toPath());
         LoginData loginData = LoginDataSession.getInstance().getLoginData();
         UsersGenerator usersGenerator = new UsersGenerator(loginData.client, loginData.domainId, nameGenerator);
 
@@ -189,7 +189,7 @@ public class WindowController implements Initializable {
                 for (int i = 0; i < userCount; i++) {
                     usersGenerator.generate(1);
                     updateProgress(i, userCount + emailCount);
-//                    updateProgress(i, userCount);
+                    updateProgress(i, userCount);
                 }
 
                 for (int j = 0; j < emailCount; j++) {

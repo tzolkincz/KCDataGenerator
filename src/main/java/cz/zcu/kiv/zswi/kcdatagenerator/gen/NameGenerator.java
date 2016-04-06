@@ -23,9 +23,8 @@ public class NameGenerator {
 	 * @param firstNamesFile - can be null
 	 * @param lastNamesFile - can be null
 	 * @throws IOException
-	 * @throws URISyntaxException
 	 */
-	public NameGenerator(Path firstNamesFile, Path lastNamesFile) throws IOException, URISyntaxException {
+	public NameGenerator(Path firstNamesFile, Path lastNamesFile) throws IOException {
 		if (firstNamesFile == null) {
 			loadFirstnames(Paths.get(getClass().getResource(DEFAULT_DICT_PATH + "firstnames").getPath()));
 		} else {

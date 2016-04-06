@@ -27,7 +27,7 @@ public class UseExample {
 		//NameGenerator prijma jako argumenty cesty ke slovnikum (fist, last names).
 		//  Kdyz je null, pouziji se implicitni slovniky
 		UsersGenerator g = new UsersGenerator(client, domainId, new NameGenerator(null, null));
-		g.generate(3);
+		g.generate(1);
 
 		//ulozeni a vypis chyb
 		for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : g.save()) {
@@ -43,9 +43,13 @@ public class UseExample {
 		//generovani emailu (WIP) - uz to funguje, ale pozor na port
 
 		String domainName = "localhost";
-		EmailGenerator eg = new EmailGenerator("http://localhost:81/Ews/Exchange.asmx", users, domainName);
+		String ewsUrl = "http://localhost:80/Ews/Exchange.asmx";
+		EmailGenerator eg = new EmailGenerator(ewsUrl, users, domainName);
 		eg.generateAndSave(5, 1, true, true, true, true);
 		eg.generateAndSave(5, 1, true, true, true, true);
+
+		ContactGenerator cg = new ContactGenerator(ewsUrl, users, domainName);
+		cg.generateAndSave(1);
 
 	}
 

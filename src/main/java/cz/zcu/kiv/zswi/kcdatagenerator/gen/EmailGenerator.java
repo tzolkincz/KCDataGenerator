@@ -68,10 +68,7 @@ public class EmailGenerator {
 
 		for (GeneratedUser user : users) {
 			Future<Exception> res = threadPool.submit(() -> {
-				try (ExchangeService service = new ExchangeService()) {
-					service.setUrl(new URI(exchangeUrl));
-					service.setCredentials(new WebCredentials(getUserAddr(user), user.getPassword()));
-
+				try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 					List<FolderId> usersFolders = createFolders(foldersProbability, service);
 
 					for (int i = 0; i < count; i++) {
@@ -161,7 +158,7 @@ public class EmailGenerator {
 		email.setFrom(getSender(externalSender));
 		email.setSubject(getSubject());
 		email.setMsg(getEmailText());
-		email.addTo(getUserAddr(user));
+		email.addTo(user.getUserAddr(domain));
 		email.buildMimeMessage();
 
 		if (attachments) {
@@ -177,10 +174,6 @@ public class EmailGenerator {
 		}
 
 		return msg;
-	}
-
-	private String getUserAddr(GeneratedUser u) {
-		return u.getUsername() + "@" + domain;
 	}
 
 	private byte[] emailToBytes(Email email) throws IOException, MessagingException {

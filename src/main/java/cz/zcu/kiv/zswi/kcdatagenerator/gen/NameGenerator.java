@@ -1,6 +1,5 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -82,5 +81,10 @@ public class NameGenerator {
 		}
 		return sb.toString() + lastNameOffset % 100;
 	}
+
+	public String getRandomLogin() {
+		return getLogin(getFirstName() + " " + getLastName());
+	}
+
 
 }

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,15 +31,19 @@ public class EmailGenerator {
 	private final List<GeneratedUser> users;
 	private final String domain;
 	private final List<String> folders = new ArrayList<>();
+	private final NameGenerator nameGenerator;
 
 	public static final double READED_PROBABILITY = 0.95;
+	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
 	public static final double ATTACHMENT_PROBABILITY = 0.05;
 	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
 
-	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) {
+
+	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException, URISyntaxException {
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
+		this.nameGenerator = new NameGenerator(null, null);
 		setFoldersMap();
 	}
 
@@ -104,7 +109,11 @@ public class EmailGenerator {
 		return null;
 	}
 
-	private String getSender() {
+	private String getSender(boolean externalSender) {
+		if (externalSender && Math.random() < EXTERNAL_SENDER_PROBABILITY) {
+			//external sender
+			return nameGenerator.getRandomLogin() + "@example.com";
+		}
 		int recipientOffset = (int) (Math.random() * users.size());
 		return users.get(recipientOffset).getUsername() + "@" + domain;
 	}
@@ -149,7 +158,7 @@ public class EmailGenerator {
 		MultiPartEmail email = new MultiPartEmail();
 		email.setHostName("smtp." + domain); //lib just need this param set
 
-		email.setFrom(getSender());
+		email.setFrom(getSender(externalSender));
 		email.setSubject(getSubject());
 		email.setMsg(getEmailText());
 		email.addTo(getUserAddr(user));

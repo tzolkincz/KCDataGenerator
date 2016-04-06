@@ -1,12 +1,17 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import javax.mail.MessagingException;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
@@ -14,9 +19,11 @@ import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
-import microsoft.exchange.webservices.data.property.complex.MessageBody;
 import microsoft.exchange.webservices.data.property.complex.MimeContent;
 import microsoft.exchange.webservices.data.search.FolderView;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.MultiPartEmail;
 
 public class EmailGenerator {
 
@@ -24,13 +31,19 @@ public class EmailGenerator {
 	private final List<GeneratedUser> users;
 	private final String domain;
 	private final List<String> folders = new ArrayList<>();
+	private final NameGenerator nameGenerator;
 
 	public static final double READED_PROBABILITY = 0.95;
+	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
+	public static final double ATTACHMENT_PROBABILITY = 0.05;
+	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
 
-	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) {
+
+	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException, URISyntaxException {
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
+		this.nameGenerator = new NameGenerator(null, null);
 		setFoldersMap();
 	}
 
@@ -55,10 +68,7 @@ public class EmailGenerator {
 
 		for (GeneratedUser user : users) {
 			Future<Exception> res = threadPool.submit(() -> {
-				try (ExchangeService service = new ExchangeService()) {
-					service.setUrl(new URI(exchangeUrl));
-					service.setCredentials(new WebCredentials(getUserAddr(user), user.getPassword()));
-
+				try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 					List<FolderId> usersFolders = createFolders(foldersProbability, service);
 
 					for (int i = 0; i < count; i++) {
@@ -96,7 +106,11 @@ public class EmailGenerator {
 		return null;
 	}
 
-	private String getSender() {
+	private String getSender(boolean externalSender) {
+		if (externalSender && Math.random() < EXTERNAL_SENDER_PROBABILITY) {
+			//external sender
+			return nameGenerator.getRandomLogin() + "@example.com";
+		}
 		int recipientOffset = (int) (Math.random() * users.size());
 		return users.get(recipientOffset).getUsername() + "@" + domain;
 	}
@@ -137,37 +151,24 @@ public class EmailGenerator {
 
 	private EmailMessage createMessage(ExchangeService service, GeneratedUser user, boolean flags,
 			boolean randCharsets, boolean attachments, boolean externalSender) throws Exception {
+
+		MultiPartEmail email = new MultiPartEmail();
+		email.setHostName("smtp." + domain); //lib just need this param set
+
+		email.setFrom(getSender(externalSender));
+		email.setSubject(getSubject());
+		email.setMsg(getEmailText());
+		email.addTo(user.getUserAddr(domain));
+		email.buildMimeMessage();
+
+		if (attachments) {
+			if (Math.random() < ATTACHMENT_PROBABILITY) {
+				email.attach(createAttachment());
+			}
+		}
+
 		EmailMessage msg = new EmailMessage(service);
-
-		msg.setSubject("Hello world!");
-		msg.setBody(MessageBody.getMessageBodyFromText("Sent using the EWS Java API."));
-		msg.getToRecipients().add(getSender());
-
-		String mime = ""
-				+ "From: <" + getSender() + ">\n"
-				+ "To: " + user.getFirstName() + " " + user.getLastName() + " <" + getUserAddr(user) + ">\n"
-				+ "MIME-Version: 1.0\n"
-				+ "Content-Type: multipart/mixed;\n"
-				+ "        boundary=\"XXXXboundary text\"\n"
-				+ "\n"
-				+ "This is a multipart message in MIME format.\n"
-				+ "\n"
-				+ "--XXXXboundary text \n"
-				+ "Content-Type: text/plain\n"
-				+ "\n"
-				+ "this is the body text\n"
-				+ System.currentTimeMillis()
-				+ "\n"
-				+ "--XXXXboundary text \n"
-				+ "Content-Type: text/plain;\n"
-				+ "Content-Disposition: attachment;\n"
-				+ "        filename=\"test.txt\"\n"
-				+ "\n"
-				+ "this is the attachment text\n"
-				+ "\n"
-				+ "--XXXXboundary text--\n";
-
-		msg.setMimeContent(new MimeContent("utf-8", mime.getBytes()));
+		msg.setMimeContent(new MimeContent("utf-8", emailToBytes(email)));
 		if (Math.random() < READED_PROBABILITY) {
 			msg.setIsRead(true);
 		}
@@ -175,7 +176,35 @@ public class EmailGenerator {
 		return msg;
 	}
 
-	private String getUserAddr(GeneratedUser u) {
-		return u.getUsername() + "@" + domain;
+	private byte[] emailToBytes(Email email) throws IOException, MessagingException {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		email.getMimeMessage().writeTo(stream);
+		return stream.toByteArray();
+	}
+
+	private String getSubject() {
+		return "Default email subject";
+	}
+
+	private String getEmailText() {
+		return "This is a test mail ... :-)";
+	}
+
+	private EmailAttachment createAttachment() throws MalformedURLException {
+		EmailAttachment attachment = new EmailAttachment();
+
+		List<String> attachments = new ArrayList<>();
+		attachments.add("files.zip");
+		attachments.add("example.jpg");
+		attachments.add("img.png");
+
+		String randAttach = attachments.get((int)(Math.random() * attachments.size()));
+
+		attachment.setPath(getClass().getResource(DEFAULT_ATTACHMENT_PATH + randAttach).getPath());
+		attachment.setDisposition(EmailAttachment.ATTACHMENT);
+		attachment.setDescription("Attachment");
+		attachment.setName(randAttach);
+
+		return attachment;
 	}
 }

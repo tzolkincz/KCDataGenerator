@@ -1,6 +1,5 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -24,9 +23,8 @@ public class NameGenerator {
 	 * @param firstNamesFile - can be null
 	 * @param lastNamesFile - can be null
 	 * @throws IOException
-	 * @throws URISyntaxException
 	 */
-	public NameGenerator(Path firstNamesFile, Path lastNamesFile) throws IOException, URISyntaxException {
+	public NameGenerator(Path firstNamesFile, Path lastNamesFile) throws IOException {
 		if (firstNamesFile == null) {
 			loadFirstnames(Paths.get(getClass().getResource(DEFAULT_DICT_PATH + "firstnames").getPath()));
 		} else {
@@ -82,5 +80,10 @@ public class NameGenerator {
 		}
 		return sb.toString() + lastNameOffset % 100;
 	}
+
+	public String getRandomLogin() {
+		return getLogin(getFirstName() + " " + getLastName());
+	}
+
 
 }

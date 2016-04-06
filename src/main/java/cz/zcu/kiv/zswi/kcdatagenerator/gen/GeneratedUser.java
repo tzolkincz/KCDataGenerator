@@ -30,4 +30,7 @@ public class GeneratedUser {
 		return username;
 	}
 
+	public String getUserAddr(String domain) {
+		return getUsername() + "@" + domain;
+	}
 }

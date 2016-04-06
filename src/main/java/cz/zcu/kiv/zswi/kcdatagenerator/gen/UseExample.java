@@ -51,6 +51,8 @@ public class UseExample {
 		ContactGenerator cg = new ContactGenerator(ewsUrl, users, domainName);
 		cg.generateAndSave(1);
 
+		EventGenerator ceg = new EventGenerator(ewsUrl, users, domainName);
+		ceg.generateAndSave(100, true, true, true, true, true, true);
 	}
 
 }

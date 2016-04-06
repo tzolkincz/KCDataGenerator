@@ -1,5 +1,6 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
+import static cz.zcu.kiv.zswi.kcdatagenerator.gen.EmailGenerator.DEFAULT_ATTACHMENT_PATH;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class EventGenerator {
 	private final String domain;
 	private static DateTime nowRounded;
 	public static final double FLAG_PROBABILITY = 0.1;
+	public static final double RECURRENT_EVENT_PROBABILITY = 0.02;
 	public static final int MIN_HOUR_EVENT_FROM = 5;
 	public static final int MAX_HOUR_EVENT_FROM = 22 - MIN_HOUR_EVENT_FROM;
 	public static final int MAX_EVENT_DURATION_HOURS = 5;
@@ -44,7 +46,7 @@ public class EventGenerator {
 	 * @param recurrent create recurrent events?
 	 * @param isPrivate create private events?
 	 * @param attachement @TODO
-	 * @param invitation create events with multiple attendents?
+	 * @param invitation create events with multiple attendants?
 	 * @throws URISyntaxException
 	 * @throws Exception
 	 */
@@ -59,7 +61,7 @@ public class EventGenerator {
 
 					setStartAndEnd(appointment, allDay, multiDay);
 
-					if (recurrent && random() < FLAG_PROBABILITY / 5) {
+					if (recurrent && random() < RECURRENT_EVENT_PROBABILITY) {
 						setRecurrent(appointment);
 					}
 
@@ -68,7 +70,8 @@ public class EventGenerator {
 					}
 
 					if (attachement && random() < FLAG_PROBABILITY) {
-						//@TODO attachement - existuje to vůbec?
+						String location = getClass().getResource(DEFAULT_ATTACHMENT_PATH + "img.png").getPath();
+						appointment.getAttachments().addFileAttachment(location);
 					}
 
 					appointment.save();

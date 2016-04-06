@@ -3,7 +3,6 @@ package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFo
 import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
-import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
 import microsoft.exchange.webservices.data.property.complex.MimeContent;
 import microsoft.exchange.webservices.data.search.FolderView;
@@ -36,8 +34,8 @@ public class EmailGenerator {
 	public static final double READED_PROBABILITY = 0.95;
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
 	public static final double ATTACHMENT_PROBABILITY = 0.05;
+	public static final double SHARED_FOLDER_PROBABILITY = 0.2 * 10;
 	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
-
 
 	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException, URISyntaxException {
 		this.exchangeUrl = exchangeUrl;
@@ -128,6 +126,7 @@ public class EmailGenerator {
 	private List<FolderId> createFolders(double foldersProbability, ExchangeService service) throws Exception {
 		List<FolderId> usersFolders = new ArrayList<>();
 		usersFolders.add(new FolderId(WellKnownFolderName.Inbox));
+		usersFolders.add(new FolderId(WellKnownFolderName.JunkEmail));
 
 		if (Math.random() <= foldersProbability) {
 			ArrayList<Folder> currentFolders = Folder.bind(service, WellKnownFolderName.Inbox)
@@ -139,7 +138,11 @@ public class EmailGenerator {
 					Folder folder = new Folder(service);
 					folder.setDisplayName(f);
 
+//					if (Math.random() < SHARED_FOLDER_PROBABILITY) {
+//						folder.save(WellKnownFolderName.PublicFoldersRoot);
+//					} else {
 					folder.save(WellKnownFolderName.Inbox);
+//					}
 					usersFolders.add(folder.getId());
 				} else {
 					usersFolders.add(current.getId());
@@ -198,7 +201,7 @@ public class EmailGenerator {
 		attachments.add("example.jpg");
 		attachments.add("img.png");
 
-		String randAttach = attachments.get((int)(Math.random() * attachments.size()));
+		String randAttach = attachments.get((int) (Math.random() * attachments.size()));
 
 		attachment.setPath(getClass().getResource(DEFAULT_ATTACHMENT_PATH + randAttach).getPath());
 		attachment.setDisposition(EmailAttachment.ATTACHMENT);

@@ -10,7 +10,9 @@ import java.util.ResourceBundle;
 
 import javax.swing.event.ChangeListener;
 
+import cz.zcu.kiv.zswi.kcdatagenerator.gen.ContactGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.EmailGenerator;
+import cz.zcu.kiv.zswi.kcdatagenerator.gen.EventGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.GeneratedUser;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.NameGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.UsersGenerator;
@@ -29,6 +31,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -45,11 +48,21 @@ public class WindowController implements Initializable {
     @FXML
     private BorderPane windowRootPane;
 
+    /***********USERS**********/
+
+    @FXML
+    private GridPane usersTable;
+
     @FXML
     private TextField userCountData;
 
     @FXML
-    private Text actiontarget;
+    private Label firstNamesLabel;
+
+    @FXML
+    private Label lastNamesLabel;
+
+    /***********EMAILS*********/
 
     @FXML
     private TextField emailCountData;
@@ -67,28 +80,7 @@ public class WindowController implements Initializable {
     private CheckBox externalSender;
 
     @FXML
-    private CheckBox advanced;
-
-    @FXML
-    private CheckBox users;
-
-    @FXML
-    private CheckBox emails;
-
-    @FXML
-    private Label firstNamesLabel;
-
-    @FXML
-    private Label lastNamesLabel;
-
-    @FXML
-    private GridPane usersTable;
-
-    @FXML
     private GridPane emailsTable;
-
-    @FXML
-    private ProgressBar progressBar;
 
     @FXML
     private Slider emailFoldersSlider;
@@ -96,8 +88,63 @@ public class WindowController implements Initializable {
     @FXML
     private Label emailFoldersSliderLabel;
 
+    /***********TASKS*********/
+
+    @FXML
+    private GridPane tasksTable;
+
+    @FXML
+    private TextField tasksCountData;
+
+    /**********EVENTS*********/
+
+    @FXML
+    private GridPane eventsTable;
+
+    @FXML
+    private TextField eventsCountData;
+
+    @FXML
+    private CheckBox fullDay;
+
+    @FXML
+    private CheckBox multipleDays;
+
+    @FXML
+    private CheckBox repeatable;
+
+    @FXML
+    private CheckBox privates;
+
+    @FXML
+    private CheckBox eventAttachment;
+
+    @FXML
+    private CheckBox invite;
+
+    /*********CONTACTS********/
+
+    @FXML
+    private GridPane contactsTable;
+
+    @FXML
+    private TextField contactsCountData;
+
+    /***********NOTES*********/
+
+    @FXML
+    private GridPane notesTable;
+
+    @FXML
+    private TextField notesCountData;
+
+    /***********MAIN**********/
+
+    @FXML
+    private ProgressBar progressBar;
+
     private static final int DEFAULT_USER_COUNT = 10;
-    private static int userCount, emailCount;
+    private static int userCount, emailCount, contactCount, eventCount;
     private Stage windowStage;
     private File firstnamesFile, lastnamesFile;
 
@@ -107,9 +154,9 @@ public class WindowController implements Initializable {
         try {
             generate();
         } catch (IOException e) {
-            e.printStackTrace();
+           e.printStackTrace();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+           e.printStackTrace();
         }
     }
 
@@ -119,25 +166,25 @@ public class WindowController implements Initializable {
         Platform.exit();
     }
 
-    @FXML
-    private void handleAdvancedAction() {
-        if (advanced.isSelected()) {
-
-        } else {
-
-        }
-    }
-
-    @FXML
-    public void handleUsersAction() {
-        if (users.isSelected()) {
-            usersTable.setVisible(true);
-            GridPane.setColumnIndex(emailsTable, 1);
-        } else {
-            usersTable.setVisible(false);
-            GridPane.setColumnIndex(emailsTable, 0);
-        }
-    }
+//    @FXML
+//    private void handleAdvancedAction() {
+//        if (advanced.isSelected()) {
+//
+//        } else {
+//
+//        }
+//    }
+//
+//    @FXML
+//    public void handleUsersAction() {
+//        if (users.isSelected()) {
+//            usersTable.setVisible(true);
+//            GridPane.setColumnIndex(emailsTable, 1);
+//        } else {
+//            usersTable.setVisible(false);
+//            GridPane.setColumnIndex(emailsTable, 0);
+//        }
+//    }
 
     @FXML
     public void handleChooseFirstNameFileAction() {
@@ -145,7 +192,9 @@ public class WindowController implements Initializable {
         chooser.setTitle("Open File");
         firstnamesFile = chooser.showOpenDialog(new Stage());
 
-        firstNamesLabel.setText(firstnamesFile.getName());
+        if (firstnamesFile != null) {
+            firstNamesLabel.setText(firstnamesFile.getName());
+        }
     }
 
     @FXML
@@ -154,7 +203,9 @@ public class WindowController implements Initializable {
         chooser.setTitle("Open File");
         lastnamesFile = chooser.showOpenDialog(new Stage());
 
-        lastNamesLabel.setText(lastnamesFile.getName());
+        if (lastnamesFile != null) {
+            lastNamesLabel.setText(lastnamesFile.getName());
+        }
     }
 
     private void showNumberError() {
@@ -165,41 +216,82 @@ public class WindowController implements Initializable {
         alert.showAndWait();
     }
 
+    private void showNumberError(int min, int max) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Chyba - generování uživatelů");
+        alert.setHeaderText("Formát čísla");
+        alert.setContentText("Musíte zadat celé nezáporné číslo v rozsahu " + min + "-" + max);
+        alert.showAndWait();
+    }
+
     private void generate() throws IOException, URISyntaxException {
 
         checkInput();
 
         String domainName = "localhost";
+        String ewsUrl = "http://localhost:81/Ews/Exchange.asmx";
+        LoginData loginData = LoginDataSession.getInstance().getLoginData();
+
         userCount = Integer.parseInt(userCountData.getText());
         emailCount = Integer.parseInt(emailCountData.getText());
 
-        NameGenerator nameGenerator = new NameGenerator(firstnamesFile.toPath(), lastnamesFile.toPath());
-        LoginData loginData = LoginDataSession.getInstance().getLoginData();
+
+
+        NameGenerator nameGenerator = new NameGenerator((firstnamesFile == null) ? null :  firstnamesFile.toPath(), (lastnamesFile == null) ? null :  lastnamesFile.toPath());
         UsersGenerator usersGenerator = new UsersGenerator(loginData.client, loginData.domainId, nameGenerator);
 
         List<GeneratedUser> generatedUsers = usersGenerator.getUsers();
         generatedUsers.add(new GeneratedUser(null, null, null, loginData.username));
 
-        EmailGenerator eg = new EmailGenerator("http://localhost:81/Ews/Exchange.asmx", generatedUsers, domainName);
+        EmailGenerator emailGenerator = new EmailGenerator(ewsUrl, generatedUsers, domainName);
+        ContactGenerator contactGenerator = new ContactGenerator(ewsUrl, generatedUsers, domainName);
+        EventGenerator eventGenerator = new EventGenerator(ewsUrl, generatedUsers, domainName);
 
         Task<Void> task = new Task<Void>() {
+
+            int progressCounter = 1;
 
             @Override
             public Void call() {
                 for (int i = 0; i < userCount; i++) {
                     usersGenerator.generate(1);
-                    updateProgress(i, userCount + emailCount);
-                    updateProgress(i, userCount);
+                    updateProgress(progressCounter, userCount + emailCount + contactCount);
+                    progressCounter++;
                 }
 
                 for (int j = 0; j < emailCount; j++) {
                     try {
-                        eg.generateAndSave(j, emailFoldersSlider.getValue(), flag.isSelected(), randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
+                        emailGenerator.generateAndSave(j, emailFoldersSlider.getValue(), flag.isSelected(), randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
+                    } catch (Exception e) {
+                        //TODO alert?
+                       e.printStackTrace();
+                    }
+                    updateProgress(progressCounter, userCount + emailCount + contactCount);
+                    progressCounter++;
+                }
+
+                for (int k = 0; k < contactCount; k++) {
+                    try {
+                        contactGenerator.generateAndSave(1);
+                    } catch (Exception e) {
+                        //TODO alert?
+                       e.printStackTrace();
+                    }
+                    updateProgress(progressCounter, userCount + emailCount + contactCount);
+                    progressCounter++;
+                }
+
+
+
+                for (int l = 0; l < eventCount; l++) {
+                    try {
+                        eventGenerator.generateAndSave(eventCount, fullDay.isSelected(), multipleDays.isSelected(), repeatable.isSelected(), privates.isSelected(), eventAttachment.isSelected(), invite.isSelected());
                     } catch (Exception e) {
                         //TODO alert?
                         e.printStackTrace();
                     }
-                    updateProgress(j, userCount + emailCount);
+                    updateProgress(progressCounter, userCount + emailCount + contactCount);
+                    progressCounter++;
                 }
 
                 return null;
@@ -227,7 +319,7 @@ public class WindowController implements Initializable {
                     stage.show();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                   e.printStackTrace();
                 }
                 updateProgress(userCount, userCount);
             }
@@ -235,11 +327,6 @@ public class WindowController implements Initializable {
 
         progressBar.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
-
-        // ulozeni a vypis chyb
-        for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : usersGenerator.save()) {
-            System.out.println(e);
-        }
     }
 
     @Override
@@ -247,12 +334,18 @@ public class WindowController implements Initializable {
         progressBar.setMaxWidth(Double.MAX_VALUE);
         progressBar.setProgress(0);
 
-        emailFoldersSlider.setOnMouseDragged(e -> {
-            int percentage = (int)emailFoldersSlider.getValue();
-            emailFoldersSliderLabel.setText("Folders: " + percentage + "%");
+        notesCountData.setText("not Implemented");
+        tasksCountData.setText("not Implemented");
+
+        emailFoldersSlider.valueProperty().addListener(new javafx.beans.value.ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                emailFoldersSliderLabel.setText("Folders: " + newValue.intValue() + "%");
+            }
         });
     }
-
+    //TODO rozsahy
     public void checkInput() {
         if (this.userCountData.getText().isEmpty()) {
             this.userCountData.setText(Integer.toString(DEFAULT_USER_COUNT));
@@ -271,6 +364,29 @@ public class WindowController implements Initializable {
             if (Math.signum((double) emailCount) == -1.0) {
                 showNumberError();
                 this.emailCountData.setText("");
+            }
+        }
+
+        if (this.contactsCountData.getText().isEmpty()) {
+            this.contactsCountData.setText(Integer.toString(DEFAULT_USER_COUNT));
+        } else {
+            contactCount = Integer.parseInt(this.contactsCountData.getText());
+            if (Math.signum((double) contactCount) == -1.0) {
+                showNumberError();
+                this.emailCountData.setText("");
+            }
+            if (contactCount < 0 && contactCount > Math.min(1000000, userCount)) {
+                showNumberError(0, Math.min(1000000, userCount));
+            }
+        }
+
+        if (this.eventsCountData.getText().isEmpty()) {
+            this.contactsCountData.setText(Integer.toString(DEFAULT_USER_COUNT));
+        } else {
+            eventCount = Integer.parseInt(this.eventsCountData.getText());
+            if (eventCount > 1000000) {
+                showNumberError(0, 1000000);
+                this.contactsCountData.setText("");
             }
         }
     }

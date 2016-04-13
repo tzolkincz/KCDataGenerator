@@ -2,7 +2,6 @@ package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
 import com.kerio.lib.json.api.connect.admin.iface.Domains;
 import com.kerio.lib.json.api.connect.admin.struct.Domain;
-import com.kerio.lib.json.api.connect.admin.struct.TimeUnit;
 import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;
 
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.ApiClient;
@@ -17,8 +16,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -50,7 +47,6 @@ public class LoginController {
 
         try {
             client.login(url.getText(), username.getText(), password.getText());
-
         } catch(Exception e) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Login error");

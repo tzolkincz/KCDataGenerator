@@ -8,11 +8,16 @@ import java.util.List;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.service.item.Appointment;
 import static java.lang.Math.random;
+import java.util.Date;
+import microsoft.exchange.webservices.data.core.enumeration.property.DefaultExtendedPropertySet;
+import microsoft.exchange.webservices.data.core.enumeration.property.MapiPropertyType;
 import microsoft.exchange.webservices.data.core.enumeration.property.Sensitivity;
 import microsoft.exchange.webservices.data.core.enumeration.property.time.DayOfTheWeek;
 import microsoft.exchange.webservices.data.core.enumeration.service.ConflictResolutionMode;
 import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
+import microsoft.exchange.webservices.data.core.service.item.Task;
 import microsoft.exchange.webservices.data.property.complex.recurrence.pattern.Recurrence.WeeklyPattern;
+import microsoft.exchange.webservices.data.property.definition.ExtendedPropertyDefinition;
 import org.joda.time.DateTime;
 
 public class EventGenerator {
@@ -48,7 +53,7 @@ public class EventGenerator {
 	 * @param multiDay	create multi days events?
 	 * @param recurrent create recurrent events?
 	 * @param isPrivate create private events?
-	 * @param attachement @TODO
+	 * @param attachement create with attachement? works only on office extension clients
 	 * @param invitation create events with multiple attendants?
 	 * @throws URISyntaxException
 	 * @throws Exception
@@ -123,7 +128,7 @@ public class EventGenerator {
 		appointment.setEnd(end.toDate());
 
 		if (start.isAfterNow()) {
-			appointment.setReminderMinutesBeforeStart(REMINDER_MINS_BEFORE);
+			setReminder(appointment, start.toDate());
 		}
 	}
 
@@ -168,6 +173,26 @@ public class EventGenerator {
 		subjects.add("Tennis");
 		subjects.add("Visit cassino");
 		subjects.add("Online poker match");
+	}
+
+	private void setReminder(Appointment appointment, Date reminderDate) throws Exception {
+		appointment.setReminderMinutesBeforeStart(REMINDER_MINS_BEFORE);
+
+		ExtendedPropertyDefinition propAlertTime = new ExtendedPropertyDefinition(
+				DefaultExtendedPropertySet.Common, 34144, MapiPropertyType.SystemTime);
+		appointment.setExtendedProperty(propAlertTime, reminderDate);
+
+		ExtendedPropertyDefinition propAlertTime2 = new ExtendedPropertyDefinition(
+				DefaultExtendedPropertySet.Common, 34050, MapiPropertyType.SystemTime);
+		appointment.setExtendedProperty(propAlertTime2, reminderDate);
+
+		ExtendedPropertyDefinition propSetAlarm = new ExtendedPropertyDefinition(
+				DefaultExtendedPropertySet.Common, 34051, MapiPropertyType.Boolean);
+		appointment.setExtendedProperty(propSetAlarm, true);
+
+			ExtendedPropertyDefinition propSetReminderMinsBefore = new ExtendedPropertyDefinition(
+				DefaultExtendedPropertySet.Common, 34049, MapiPropertyType.Integer);
+		appointment.setExtendedProperty(propSetReminderMinsBefore, REMINDER_MINS_BEFORE);
 	}
 
 }

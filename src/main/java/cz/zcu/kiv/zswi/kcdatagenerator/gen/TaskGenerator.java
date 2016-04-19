@@ -4,11 +4,15 @@ import java.io.IOException;
 import static java.lang.Math.random;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import microsoft.exchange.webservices.data.core.ExchangeService;
+import microsoft.exchange.webservices.data.core.enumeration.property.DefaultExtendedPropertySet;
 import microsoft.exchange.webservices.data.core.enumeration.property.Importance;
+import microsoft.exchange.webservices.data.core.enumeration.property.MapiPropertyType;
 import microsoft.exchange.webservices.data.core.enumeration.service.TaskStatus;
 import microsoft.exchange.webservices.data.core.service.item.Task;
+import microsoft.exchange.webservices.data.property.definition.ExtendedPropertyDefinition;
 import org.joda.time.DateTime;
 
 public class TaskGenerator {
@@ -62,7 +66,8 @@ public class TaskGenerator {
 					}
 
 					t.setSubject(getSubject());
-					t.setReminderDueBy(new DateTime(t.getDueDate()).minusDays(1).toDate());
+
+					setReminder(t, new DateTime(t.getDueDate()).minusDays(1).toDate());
 
 					t.save();
 				}
@@ -87,6 +92,24 @@ public class TaskGenerator {
 		subjects.add("Sell old car");
 		subjects.add("Plan vacation");
 		subjects.add("Book fly");
+	}
+
+	private void setReminder(Task t, Date reminderDate) throws Exception {
+		t.setReminderDueBy(reminderDate);
+		t.setReminderMinutesBeforeStart(45);
+
+		ExtendedPropertyDefinition propAlertTime = new ExtendedPropertyDefinition(
+				DefaultExtendedPropertySet.Common, 34144, MapiPropertyType.SystemTime);
+
+		t.setExtendedProperty(propAlertTime, reminderDate);
+
+		ExtendedPropertyDefinition propAlertTime2 = new ExtendedPropertyDefinition(
+				DefaultExtendedPropertySet.Common, 34050, MapiPropertyType.SystemTime);
+		t.setExtendedProperty(propAlertTime2, reminderDate);
+
+		ExtendedPropertyDefinition propSetAlarm = new ExtendedPropertyDefinition(
+				DefaultExtendedPropertySet.Common, 34051, MapiPropertyType.Boolean);
+		t.setExtendedProperty(propSetAlarm, true);
 	}
 
 }

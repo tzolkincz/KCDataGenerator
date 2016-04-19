@@ -71,7 +71,6 @@ public class NotesGenerator {
 				try {
 					createItemsRequest.execute();
 				} catch (ServiceRequestException e) {
-					System.out.println(e.getCause());
 					if (e.getCause() instanceof ServiceLocalException) {
 						/*
 						throwing: "microsoft.exchange.webservices.data.core.exception.service.local.

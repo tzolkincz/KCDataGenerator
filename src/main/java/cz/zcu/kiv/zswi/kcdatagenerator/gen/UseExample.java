@@ -12,6 +12,7 @@ public class UseExample {
 		// pripojeni api clienta
 		ApiClient client = new ApiClient();
 		client.login("http://localhost:4040", "admin", "xxxxxx");
+//		client.login("https://10.0.0.104:4040", "admin", "xxxxxx");
 
 		//vyber domeny
 		Domain[] domains = client.getApi(Domains.class).get(new SearchQuery()).getList();
@@ -41,9 +42,10 @@ public class UseExample {
 		}
 
 		//generovani emailu (WIP) - uz to funguje, ale pozor na port
-
 		String domainName = "localhost";
-		String ewsUrl = "http://localhost:80/Ews/Exchange.asmx";
+		String ewsUrl = "http://localhost:8800/Ews/Exchange.asmx";
+//		String ewsUrl = "http://10.0.0.104:8800/Ews/Exchange.asmx";
+
 		EmailGenerator eg = new EmailGenerator(ewsUrl, users, domainName);
 		eg.generateAndSave(5, 1, true, true, true, true);
 		eg.generateAndSave(5, 1, true, true, true, true);
@@ -53,6 +55,12 @@ public class UseExample {
 
 		EventGenerator ceg = new EventGenerator(ewsUrl, users, domainName);
 		ceg.generateAndSave(100, true, true, true, true, true, true);
+
+		TaskGenerator tg = new TaskGenerator(ewsUrl, users, domainName);
+		tg.generateAndSave(10);
+
+		NotesGenerator ng = new NotesGenerator(ewsUrl, users, domainName);
+		ng.generateAndSave(5);
 	}
 
 }

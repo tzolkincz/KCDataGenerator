@@ -116,11 +116,11 @@ public class EmailGenerator {
 	private void setFoldersMap() {
 		folders.add("Important");
 		folders.add("Social Networks");
-//		folders.add("Personal");
-//		folders.add("Work");
-//		folders.add("Invoices");
-//		folders.add("Hobby");
-//		folders.add("Family");
+		folders.add("Personal");
+		folders.add("Work");
+		folders.add("Invoices");
+		folders.add("Hobby");
+		folders.add("Family");
 	}
 
 	private List<FolderId> createFolders(double foldersProbability, ExchangeService service) throws Exception {

@@ -17,6 +17,7 @@ public class TaskGenerator {
 	private final List<GeneratedUser> users;
 	private final String domain;
 	private static DateTime nowRounded;
+	private final List<String> subjects = new ArrayList<>();
 
 	private static final int DUE_DATE_HISTORY_MAX_DAYS = 100;
 	private static final int DUE_DATE_FUTURE_MAX_DAYS = 100;
@@ -30,6 +31,7 @@ public class TaskGenerator {
 
 		DateTime now = DateTime.now();
 		nowRounded = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), now.getHourOfDay(), 0);
+		initSubjects();
 	}
 
 	public void generateAndSave(int count) throws URISyntaxException, Exception {
@@ -69,7 +71,10 @@ public class TaskGenerator {
 	}
 
 	private String getSubject() {
-		List<String> subjects = new ArrayList<>();
+		return subjects.get((int) (random() * subjects.size()));
+	}
+
+	private void initSubjects() {
 		subjects.add("Buy milk");
 		subjects.add("Buy car");
 		subjects.add("Buy house");
@@ -82,8 +87,6 @@ public class TaskGenerator {
 		subjects.add("Sell old car");
 		subjects.add("Plan vacation");
 		subjects.add("Book fly");
-
-		return subjects.get((int) (random() * subjects.size()));
 	}
 
 }

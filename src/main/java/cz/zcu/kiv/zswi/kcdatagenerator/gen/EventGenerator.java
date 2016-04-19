@@ -21,6 +21,8 @@ public class EventGenerator {
 	private final List<GeneratedUser> users;
 	private final String domain;
 	private static DateTime nowRounded;
+	private final List<String> subjects = new ArrayList<>();
+
 	public static final double FLAG_PROBABILITY = 0.1;
 	public static final double RECURRENT_EVENT_PROBABILITY = 0.02;
 	public static final int MIN_HOUR_EVENT_FROM = 5;
@@ -36,6 +38,7 @@ public class EventGenerator {
 
 		DateTime now = DateTime.now();
 		nowRounded = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), now.getHourOfDay(), 0);
+		initSubjects();
 	}
 
 	/**
@@ -90,34 +93,6 @@ public class EventGenerator {
 	}
 
 	private String getSubject() {
-		List<String> subjects = new ArrayList<>();
-		subjects.add("Call");
-		subjects.add("Meeting");
-		subjects.add("Retrospective");
-		subjects.add("Monthly Assesment");
-		subjects.add("Job Inteview");
-		subjects.add("Money Raise Talk");
-		subjects.add("Language Lesson");
-		subjects.add("Language Home Work");
-		subjects.add("Piano Lesson");
-		subjects.add("Shopping with wife");
-		subjects.add("Beer session");
-		subjects.add("Secret Project");
-		subjects.add("PR Meeting");
-		subjects.add("HR Meeting");
-		subjects.add("Marketing Meeting");
-		subjects.add("Sales Meeting");
-		subjects.add("Board Meeting");
-		subjects.add("Sales Focus Group Meeting");
-		subjects.add("MRR Evaluation");
-		subjects.add("Presentation");
-		subjects.add("Kickoff project xyz");
-		subjects.add("Tea session");
-		subjects.add("Golf");
-		subjects.add("Tennis");
-		subjects.add("Visit cassino");
-		subjects.add("Online poker match");
-
 		return subjects.get((int) (random() * subjects.size()));
 	}
 
@@ -164,6 +139,35 @@ public class EventGenerator {
 	private String getInvitee() {
 		int offset = (int) (random() * users.size());
 		return users.get(offset).getUserAddr(domain);
+	}
+
+	private void initSubjects() {
+		subjects.add("Call");
+		subjects.add("Meeting");
+		subjects.add("Retrospective");
+		subjects.add("Monthly Assesment");
+		subjects.add("Job Inteview");
+		subjects.add("Money Raise Talk");
+		subjects.add("Language Lesson");
+		subjects.add("Language Home Work");
+		subjects.add("Piano Lesson");
+		subjects.add("Shopping with wife");
+		subjects.add("Beer session");
+		subjects.add("Secret Project");
+		subjects.add("PR Meeting");
+		subjects.add("HR Meeting");
+		subjects.add("Marketing Meeting");
+		subjects.add("Sales Meeting");
+		subjects.add("Board Meeting");
+		subjects.add("Sales Focus Group Meeting");
+		subjects.add("MRR Evaluation");
+		subjects.add("Presentation");
+		subjects.add("Kickoff project xyz");
+		subjects.add("Tea session");
+		subjects.add("Golf");
+		subjects.add("Tennis");
+		subjects.add("Visit cassino");
+		subjects.add("Online poker match");
 	}
 
 }

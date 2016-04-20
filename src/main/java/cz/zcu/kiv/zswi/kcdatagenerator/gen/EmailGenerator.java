@@ -34,6 +34,7 @@ public class EmailGenerator {
 	public static final double READED_PROBABILITY = 0.95;
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
 	public static final double ATTACHMENT_PROBABILITY = 0.05;
+	public static final double FLAGS_PROBABILITY = 0.05;
 	public static final double SHARED_FOLDER_PROBABILITY = 0.2 * 10;
 	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
 
@@ -73,6 +74,17 @@ public class EmailGenerator {
 						EmailMessage msg = createMessage(
 								service, user, flags, randCharsets, attachments, externalSender);
 						msg.save(usersFolders.get(i % usersFolders.size()));
+
+
+						//WIP: reply
+//						ResponseMessage reply = msg.createReply(true);
+//						reply.setBodyPrefix(new MessageBody("fwd:"));
+//						reply.getToRecipients().add("bar@example.com");
+//						reply.getCcRecipients().add("foo@example.com");
+//						reply.sendAndSaveCopy(WellKnownFolderName.SentItems);
+//
+//						msg.update(ConflictResolutionMode.AutoResolve);
+
 					}
 				} catch (Exception e) {
 					return e;
@@ -164,16 +176,18 @@ public class EmailGenerator {
 		email.addTo(user.getUserAddr(domain));
 		email.buildMimeMessage();
 
-		if (attachments) {
-			if (Math.random() < ATTACHMENT_PROBABILITY) {
-				email.attach(createAttachment());
-			}
+		if (attachments && Math.random() < ATTACHMENT_PROBABILITY) {
+			email.attach(createAttachment());
 		}
 
 		EmailMessage msg = new EmailMessage(service);
 		msg.setMimeContent(new MimeContent("utf-8", emailToBytes(email)));
 		if (Math.random() < READED_PROBABILITY) {
 			msg.setIsRead(true);
+		}
+
+		if (flags && Math.random() < FLAGS_PROBABILITY) {
+			setFlasgs(msg);
 		}
 
 		return msg;
@@ -209,5 +223,20 @@ public class EmailGenerator {
 		attachment.setName(randAttach);
 
 		return attachment;
+	}
+
+	private void setFlasgs(EmailMessage email) throws Exception {
+//		ExtendedPropertyDefinition propAlertTime = new ExtendedPropertyDefinition(
+//				DefaultExtendedPropertySet.Common, 0x4029, MapiPropertyType.String);
+//
+//		email.setExtendedProperty(propAlertTime, "SMTP");
+//
+//		ExtendedPropertyDefinition propAlertTime2 = new ExtendedPropertyDefinition(
+//				DefaultExtendedPropertySet.Common, 0x402B, MapiPropertyType.String);
+//		email.setExtendedProperty(propAlertTime2, "My User");
+//
+//		ExtendedPropertyDefinition propSetAlarm = new ExtendedPropertyDefinition(
+//				DefaultExtendedPropertySet.Common, 0x402A, MapiPropertyType.String);
+//		email.setExtendedProperty(propSetAlarm, getSender(true));
 	}
 }

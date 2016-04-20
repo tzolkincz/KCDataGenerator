@@ -26,6 +26,7 @@ public class NotesGenerator {
 	private final String domain;
 	private final List<String> subjects = new ArrayList<>();
 	private final List<MessageBody> bodys = new ArrayList<>();
+	private final List<EmailMessage> generatedNotes;
 
 	public static final int STICKY_NOTES_COLOURS_COUNT = 5;
 	private static final String PROPERTY_DEFINITION_UUID = "0006200E-0000-0000-C000-000000000046"; //shitty api
@@ -36,9 +37,10 @@ public class NotesGenerator {
 		this.domain = domain;
 		initSubjects();
 		initBodys();
+		generatedNotes = new ArrayList<>();
 	}
 
-	public void generateAndSave(int count) throws Exception {
+	public List<EmailMessage> generateAndSave(int count) throws Exception {
 		for (GeneratedUser user : users) {
 			try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 
@@ -66,6 +68,7 @@ public class NotesGenerator {
 					createItemsRequest.setItems(itemList);
 					createItemsRequest.setParentFolderId(new FolderId(WellKnownFolderName.Notes));
 
+					generatedNotes.add(stickyNote);
 				}
 
 				try {
@@ -84,6 +87,8 @@ public class NotesGenerator {
 				}
 			}
 		}
+
+		return generatedNotes;
 	}
 
 	private void initSubjects() {

@@ -22,6 +22,7 @@ public class TaskGenerator {
 	private final String domain;
 	private static DateTime nowRounded;
 	private final List<String> subjects = new ArrayList<>();
+	private final List<Task> generatedTasks;
 
 	private static final int DUE_DATE_HISTORY_MAX_DAYS = 100;
 	private static final int DUE_DATE_FUTURE_MAX_DAYS = 100;
@@ -36,9 +37,10 @@ public class TaskGenerator {
 		DateTime now = DateTime.now();
 		nowRounded = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), now.getHourOfDay(), 0);
 		initSubjects();
+		generatedTasks = new ArrayList<>();
 	}
 
-	public void generateAndSave(int count) throws URISyntaxException, Exception {
+	public List<Task> generateAndSave(int count) throws URISyntaxException, Exception {
 		for (GeneratedUser user : users) {
 			try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 				for (int i = 0; i < count; i++) {
@@ -70,9 +72,12 @@ public class TaskGenerator {
 					setReminder(t, new DateTime(t.getDueDate()).minusDays(1).toDate());
 
 					t.save();
+					generatedTasks.add(t);
 				}
 			}
 		}
+
+		return generatedTasks;
 	}
 
 	private String getSubject() {

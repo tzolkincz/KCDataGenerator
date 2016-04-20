@@ -15,7 +15,6 @@ import microsoft.exchange.webservices.data.core.enumeration.property.Sensitivity
 import microsoft.exchange.webservices.data.core.enumeration.property.time.DayOfTheWeek;
 import microsoft.exchange.webservices.data.core.enumeration.service.ConflictResolutionMode;
 import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
-import microsoft.exchange.webservices.data.core.service.item.Task;
 import microsoft.exchange.webservices.data.property.complex.recurrence.pattern.Recurrence.WeeklyPattern;
 import microsoft.exchange.webservices.data.property.definition.ExtendedPropertyDefinition;
 import org.joda.time.DateTime;
@@ -27,6 +26,7 @@ public class EventGenerator {
 	private final String domain;
 	private static DateTime nowRounded;
 	private final List<String> subjects = new ArrayList<>();
+	private final List<Appointment> generatedEvents;
 
 	public static final double FLAG_PROBABILITY = 0.1;
 	public static final double RECURRENT_EVENT_PROBABILITY = 0.02;
@@ -44,6 +44,7 @@ public class EventGenerator {
 		DateTime now = DateTime.now();
 		nowRounded = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), now.getHourOfDay(), 0);
 		initSubjects();
+		generatedEvents = new ArrayList<>();
 	}
 
 	/**
@@ -55,10 +56,11 @@ public class EventGenerator {
 	 * @param isPrivate create private events?
 	 * @param attachement create with attachement? works only on office extension clients
 	 * @param invitation create events with multiple attendants?
+	 * @return list of generated events
 	 * @throws URISyntaxException
 	 * @throws Exception
 	 */
-	public void generateAndSave(int count, boolean allDay, boolean multiDay, boolean recurrent,
+	public List<Appointment> generateAndSave(int count, boolean allDay, boolean multiDay, boolean recurrent,
 			boolean isPrivate, boolean attachement, boolean invitation) throws URISyntaxException, Exception {
 
 		for (GeneratedUser user : users) {
@@ -91,10 +93,11 @@ public class EventGenerator {
 						}
 						appointment.update(ConflictResolutionMode.AutoResolve);
 					}
+					generatedEvents.add(appointment);
 				}
 			}
 		}
-
+		return generatedEvents;
 	}
 
 	private String getSubject() {
@@ -190,7 +193,7 @@ public class EventGenerator {
 				DefaultExtendedPropertySet.Common, 34051, MapiPropertyType.Boolean);
 		appointment.setExtendedProperty(propSetAlarm, true);
 
-			ExtendedPropertyDefinition propSetReminderMinsBefore = new ExtendedPropertyDefinition(
+		ExtendedPropertyDefinition propSetReminderMinsBefore = new ExtendedPropertyDefinition(
 				DefaultExtendedPropertySet.Common, 34049, MapiPropertyType.Integer);
 		appointment.setExtendedProperty(propSetReminderMinsBefore, REMINDER_MINS_BEFORE);
 	}

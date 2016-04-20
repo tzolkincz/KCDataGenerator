@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +31,7 @@ public class EmailGenerator {
 	private final String domain;
 	private final List<String> folders = new ArrayList<>();
 	private final NameGenerator nameGenerator;
+	private final List<EmailMessage> generatedEmails;
 
 	public static final double READED_PROBABILITY = 0.95;
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
@@ -44,6 +46,7 @@ public class EmailGenerator {
 		this.domain = domain;
 		this.nameGenerator = new NameGenerator(null, null);
 		setFoldersMap();
+		generatedEmails = Collections.synchronizedList(new ArrayList<EmailMessage>());
 	}
 
 	/**
@@ -54,9 +57,10 @@ public class EmailGenerator {
 	 * @param randCharsets	generate emails with random charset
 	 * @param attachments	emails with attachments
 	 * @param externalSender	set external sender in email headers
+	 * @return list of generated messages
 	 * @throws Exception
 	 */
-	public void generateAndSave(int count, double foldersProbability, boolean flags,
+	public List<EmailMessage> generateAndSave(int count, double foldersProbability, boolean flags,
 			boolean randCharsets, boolean attachments, boolean externalSender) throws Exception {
 		if (foldersProbability < 0 && foldersProbability > 1) {
 			throw new IllegalArgumentException("Folders Probability must be set between  0 and 1 inclusive");
@@ -75,6 +79,7 @@ public class EmailGenerator {
 								service, user, flags, randCharsets, attachments, externalSender);
 						msg.save(usersFolders.get(i % usersFolders.size()));
 
+						generatedEmails.add(msg);
 
 						//WIP: reply
 //						ResponseMessage reply = msg.createReply(true);
@@ -105,6 +110,7 @@ public class EmailGenerator {
 		}
 		System.out.println("Emails saved in: " + (System.currentTimeMillis() - ts) + " ms");
 
+		return generatedEmails;
 	}
 
 	private Folder findFolderByName(String f, ArrayList<Folder> currentFolders) throws ServiceLocalException {

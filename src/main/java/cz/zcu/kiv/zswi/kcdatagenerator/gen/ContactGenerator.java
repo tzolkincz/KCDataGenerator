@@ -2,6 +2,7 @@ package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.property.EmailAddressKey;
@@ -16,15 +17,17 @@ public class ContactGenerator {
 	private final List<GeneratedUser> users;
 	private final String domain;
 	private final NameGenerator nameGenerator;
+	private final List<Contact> generatedContacts;
 
 	public ContactGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException {
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
 		this.nameGenerator = new NameGenerator(null, null);
+		generatedContacts = new ArrayList<>();
 	}
 
-	public void generateAndSave(int count) throws URISyntaxException, Exception {
+	public List<Contact> generateAndSave(int count) throws URISyntaxException, Exception {
 		for (GeneratedUser user : users) {
 			try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 				for (int i = 0; i < count; i++) {
@@ -50,11 +53,14 @@ public class ContactGenerator {
 					paEntry1.setCountryOrRegion("INDIA");
 					contact.getPhysicalAddresses().setPhysicalAddress(PhysicalAddressKey.Home, paEntry1);
 					contact.save();
+
+					generatedContacts.add(contact);
 				}
 			} catch (Exception e) {
 				throw e;
 			}
 		}
+		return generatedContacts;
 	}
 
 }

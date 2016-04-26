@@ -13,12 +13,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.mail.MessagingException;
 import microsoft.exchange.webservices.data.core.ExchangeService;
+import microsoft.exchange.webservices.data.core.enumeration.property.MapiPropertyType;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
 import microsoft.exchange.webservices.data.property.complex.MimeContent;
+import microsoft.exchange.webservices.data.property.definition.ExtendedPropertyDefinition;
 import microsoft.exchange.webservices.data.search.FolderView;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailAttachment;
@@ -232,17 +234,12 @@ public class EmailGenerator {
 	}
 
 	private void setFlasgs(EmailMessage email) throws Exception {
-//		ExtendedPropertyDefinition propAlertTime = new ExtendedPropertyDefinition(
-//				DefaultExtendedPropertySet.Common, 0x4029, MapiPropertyType.String);
-//
-//		email.setExtendedProperty(propAlertTime, "SMTP");
-//
-//		ExtendedPropertyDefinition propAlertTime2 = new ExtendedPropertyDefinition(
-//				DefaultExtendedPropertySet.Common, 0x402B, MapiPropertyType.String);
-//		email.setExtendedProperty(propAlertTime2, "My User");
-//
-//		ExtendedPropertyDefinition propSetAlarm = new ExtendedPropertyDefinition(
-//				DefaultExtendedPropertySet.Common, 0x402A, MapiPropertyType.String);
-//		email.setExtendedProperty(propSetAlarm, getSender(true));
+		ExtendedPropertyDefinition flagStatus = new ExtendedPropertyDefinition(
+				0x1090, MapiPropertyType.Integer);
+		email.setExtendedProperty(flagStatus, 2);
+
+		ExtendedPropertyDefinition flagFlags = new ExtendedPropertyDefinition(
+				0x0E2B, MapiPropertyType.Integer);
+		email.setExtendedProperty(flagFlags, 1);
 	}
 }

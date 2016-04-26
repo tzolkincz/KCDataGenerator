@@ -122,6 +122,8 @@ public class EventGenerator {
 		} else if (multiDay && random() < FLAG_PROBABILITY) {
 			start = start.withMillisOfDay(0);
 			end = start.plusDays((int) (random() * 10));
+			//if event is multiday, hence is all day
+			appointment.setIsAllDayEvent(true);
 		} else {
 			start = start.withHourOfDay(MIN_HOUR_EVENT_FROM + (int) (random() * MAX_HOUR_EVENT_FROM));
 			end = start.plusHours((int) (random() * MAX_EVENT_DURATION_HOURS));

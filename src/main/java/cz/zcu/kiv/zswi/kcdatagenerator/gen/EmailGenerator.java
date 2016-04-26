@@ -13,12 +13,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.mail.MessagingException;
 import microsoft.exchange.webservices.data.core.ExchangeService;
+import microsoft.exchange.webservices.data.core.enumeration.permission.folder.FolderPermissionLevel;
 import microsoft.exchange.webservices.data.core.enumeration.property.MapiPropertyType;
+import microsoft.exchange.webservices.data.core.enumeration.property.StandardUser;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
+import microsoft.exchange.webservices.data.property.complex.FolderPermission;
 import microsoft.exchange.webservices.data.property.complex.MimeContent;
 import microsoft.exchange.webservices.data.property.definition.ExtendedPropertyDefinition;
 import microsoft.exchange.webservices.data.search.FolderView;
@@ -39,7 +42,7 @@ public class EmailGenerator {
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
 	public static final double ATTACHMENT_PROBABILITY = 0.05;
 	public static final double FLAGS_PROBABILITY = 0.05;
-	public static final double SHARED_FOLDER_PROBABILITY = 0.2 * 10;
+	public static final double SHARED_FOLDER_PROBABILITY = 0.15;
 	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
 
 	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException, URISyntaxException {
@@ -82,16 +85,6 @@ public class EmailGenerator {
 						msg.save(usersFolders.get(i % usersFolders.size()));
 
 						generatedEmails.add(msg);
-
-						//WIP: reply
-//						ResponseMessage reply = msg.createReply(true);
-//						reply.setBodyPrefix(new MessageBody("fwd:"));
-//						reply.getToRecipients().add("bar@example.com");
-//						reply.getCcRecipients().add("foo@example.com");
-//						reply.sendAndSaveCopy(WellKnownFolderName.SentItems);
-//
-//						msg.update(ConflictResolutionMode.AutoResolve);
-
 					}
 				} catch (Exception e) {
 					return e;
@@ -157,12 +150,10 @@ public class EmailGenerator {
 				if (current == null) {
 					Folder folder = new Folder(service);
 					folder.setDisplayName(f);
-
-//					if (Math.random() < SHARED_FOLDER_PROBABILITY) {
-//						folder.save(WellKnownFolderName.PublicFoldersRoot);
-//					} else {
 					folder.save(WellKnownFolderName.Inbox);
-//					}
+
+					setSharing(folder);
+
 					usersFolders.add(folder.getId());
 				} else {
 					usersFolders.add(current.getId());
@@ -242,4 +233,21 @@ public class EmailGenerator {
 				0x0E2B, MapiPropertyType.Integer);
 		email.setExtendedProperty(flagFlags, 1);
 	}
+
+	private void setSharing(Folder folder) throws Exception {
+
+		//sharing - must be set as update
+		if (Math.random() < SHARED_FOLDER_PROBABILITY) {
+			folder.getPermissions().add(
+					new FolderPermission(StandardUser.Anonymous, FolderPermissionLevel.Contributor));
+		}
+		if (Math.random() < SHARED_FOLDER_PROBABILITY) {
+			for (int i = 0; i < (int) (Math.random() * 5); i++) {
+				folder.getPermissions().add(
+						new FolderPermission(getSender(false), FolderPermissionLevel.Contributor));
+			}
+		}
+		folder.update();
+	}
+
 }

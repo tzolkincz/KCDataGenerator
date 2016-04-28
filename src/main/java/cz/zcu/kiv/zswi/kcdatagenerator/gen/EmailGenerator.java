@@ -37,6 +37,7 @@ public class EmailGenerator {
 	private final List<String> folders = new ArrayList<>();
 	private final NameGenerator nameGenerator;
 	private final List<EmailMessage> generatedEmails;
+	private boolean loadStateAfterSave = false;
 
 	public static final double READED_PROBABILITY = 0.95;
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
@@ -45,7 +46,9 @@ public class EmailGenerator {
 	public static final double SHARED_FOLDER_PROBABILITY = 0.15;
 	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
 
-	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException, URISyntaxException {
+	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain)
+			throws IOException, URISyntaxException {
+
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
@@ -84,6 +87,9 @@ public class EmailGenerator {
 								service, user, flags, randCharsets, attachments, externalSender);
 						msg.save(usersFolders.get(i % usersFolders.size()));
 
+						if (loadStateAfterSave) {
+							msg.load();
+						}
 						generatedEmails.add(msg);
 					}
 				} catch (Exception e) {
@@ -180,7 +186,7 @@ public class EmailGenerator {
 		}
 
 		EmailMessage msg = new EmailMessage(service);
-		msg.setMimeContent(new MimeContent("utf-8", emailToBytes(email)));
+		msg.setMimeContent(new MimeContent("UTF-8", emailToBytes(email)));
 		if (Math.random() < READED_PROBABILITY) {
 			msg.setIsRead(true);
 		}
@@ -248,6 +254,16 @@ public class EmailGenerator {
 			}
 		}
 		folder.update();
+	}
+
+	/**
+	 * Load state for unit tests. Cant access generated properties without that. Load state needs active ews
+	 * service connection
+	 *
+	 * @param loadStateAfterSave
+	 */
+	public void setLoadStateAfterSave(boolean loadStateAfterSave) {
+		this.loadStateAfterSave = loadStateAfterSave;
 	}
 
 }

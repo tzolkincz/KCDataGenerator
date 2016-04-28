@@ -46,9 +46,11 @@ public class UseExample {
 		String ewsUrl = "http://localhost:8800/Ews/Exchange.asmx";
 //		String ewsUrl = "http://10.0.0.104:8800/Ews/Exchange.asmx";
 
+//		users.clear();
+//		users.add(new GeneratedUser("a", "b", "u", "dawsonevelyn30"));
+
 		EmailGenerator eg = new EmailGenerator(ewsUrl, users, domainName);
-		eg.generateAndSave(5, 1, true, true, true, true);
-		eg.generateAndSave(5, 1, true, true, true, true);
+		eg.generateAndSave(1, 1.0, true, true, true, true);
 
 		ContactGenerator cg = new ContactGenerator(ewsUrl, users, domainName);
 		cg.generateAndSave(1);

@@ -47,6 +47,7 @@ public class LoginController {
 
         try {
             client.login(url.getText(), username.getText(), password.getText());
+            
         } catch(Exception e) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Login error");
@@ -64,7 +65,7 @@ public class LoginController {
             System.out.println(" => " + domain.getId());
             domainId = domain.getId();
         }
-        LoginDataSession.getInstance().setLoginData(new LoginData(client, domainId, username.getText()));
+        LoginDataSession.getInstance().setLoginData(new LoginData(client, domainId, username.getText(), password.getText()));
 
         ((Stage)((Node)event.getTarget()).getScene().getWindow()).close();
 

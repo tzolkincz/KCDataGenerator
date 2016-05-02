@@ -38,7 +38,7 @@ public class Window extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("KerioConnect generator");
+        this.primaryStage.setTitle("Kerio Connect generator");
         // obtains scene generated from FXML file
         this.primaryStage.setScene(createScene());
         this.primaryStage.show();

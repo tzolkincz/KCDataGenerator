@@ -27,6 +27,7 @@ public class NotesGenerator {
 	private final List<String> subjects = new ArrayList<>();
 	private final List<MessageBody> bodys = new ArrayList<>();
 	private final List<EmailMessage> generatedNotes;
+	private boolean nationalChars = false;
 
 	public static final int STICKY_NOTES_COLOURS_COUNT = 5;
 	private static final String PROPERTY_DEFINITION_UUID = "0006200E-0000-0000-C000-000000000046"; //shitty api
@@ -35,12 +36,34 @@ public class NotesGenerator {
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
-		initSubjects();
+		initSubjects(nationalChars);
 		initBodys();
 		generatedNotes = new ArrayList<>();
 	}
 
+	/**
+	 * Generate a save Notes
+	 *
+	 * @param count count of generated notes per user
+	 * @return
+	 * @throws Exception
+	 */
+	@Deprecated
 	public List<EmailMessage> generateAndSave(int count) throws Exception {
+		return generateAndSave(count, true);
+	}
+
+	/**
+	 * Generate a save Notes
+	 *
+	 * @param count count of generated notes per user
+	 * @param nationalChars determine if use national chars in subjects
+	 * @return
+	 * @throws Exception
+	 */
+	public List<EmailMessage> generateAndSave(int count, boolean nationalChars) throws Exception {
+		initSubjects(nationalChars);
+
 		for (GeneratedUser user : users) {
 			try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 
@@ -91,19 +114,35 @@ public class NotesGenerator {
 		return generatedNotes;
 	}
 
-	private void initSubjects() {
-		subjects.add("Buy a house");
-		subjects.add("Plant a tree");
-		subjects.add("Find lost dog");
-		subjects.add("Earn $1M");
-		subjects.add("Earn $10M");
-		subjects.add("Earn $1B");
-		subjects.add("Commit suicide");
-		subjects.add("Invent something cool");
-		subjects.add("Go to the ZOO");
-		subjects.add("Create family tree");
-		subjects.add("Write book");
-		subjects.add("Write CV");
+	private void initSubjects(boolean nationalChars) {
+		if (subjects.isEmpty() || this.nationalChars != nationalChars) {
+			subjects.clear();
+			this.nationalChars = nationalChars;
+
+			if (nationalChars) {
+				subjects.add("Купить дом (ru)");
+				subjects.add("вырастить дерево (ru)");
+				subjects.add("Найти потерянную собаку (ru)");
+				subjects.add("совершить самоубийство (ru)");
+				subjects.add("Koupit dům");
+				subjects.add("Zasadit strom");
+				subjects.add("Vytvořit večeři");
+				subjects.add("Jít do čínské restaurace");
+			} else {
+				subjects.add("Buy a house");
+				subjects.add("Plant a tree");
+				subjects.add("Find lost dog");
+				subjects.add("Earn $1M");
+				subjects.add("Earn $10M");
+				subjects.add("Earn $1B");
+				subjects.add("Commit suicide");
+				subjects.add("Invent something cool");
+				subjects.add("Go to the ZOO");
+				subjects.add("Create family tree");
+				subjects.add("Write book");
+				subjects.add("Write CV");
+			}
+		}
 	}
 
 	private void initBodys() {

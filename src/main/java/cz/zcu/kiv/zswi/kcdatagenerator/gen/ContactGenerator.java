@@ -20,11 +20,18 @@ public class ContactGenerator {
 	private final List<Contact> generatedContacts;
 	private boolean loadStateAfterSave = false;
 
+	@Deprecated
 	public ContactGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException {
+		this(exchangeUrl, users, domain, new NameGenerator(null, null));
+	}
+
+	public ContactGenerator(String exchangeUrl, List<GeneratedUser> users,
+			String domain, NameGenerator nameGenerator) throws IOException {
+
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
-		this.nameGenerator = new NameGenerator(null, null);
+		this.nameGenerator = nameGenerator;
 		generatedContacts = new ArrayList<>();
 	}
 

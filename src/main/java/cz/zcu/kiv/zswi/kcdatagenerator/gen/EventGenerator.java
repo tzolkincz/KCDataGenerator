@@ -27,6 +27,7 @@ public class EventGenerator {
 	private static DateTime nowRounded;
 	private final List<String> subjects = new ArrayList<>();
 	private final List<Appointment> generatedEvents;
+	private boolean nationalChars = false;
 
 	public static final double FLAG_PROBABILITY = 0.1;
 	public static final double RECURRENT_EVENT_PROBABILITY = 0.02;
@@ -43,7 +44,8 @@ public class EventGenerator {
 
 		DateTime now = DateTime.now();
 		nowRounded = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), now.getHourOfDay(), 0);
-		initSubjects();
+
+		initSubjects(nationalChars);
 		generatedEvents = new ArrayList<>();
 	}
 
@@ -60,9 +62,31 @@ public class EventGenerator {
 	 * @throws URISyntaxException
 	 * @throws Exception
 	 */
+	@Deprecated
 	public List<Appointment> generateAndSave(int count, boolean allDay, boolean multiDay, boolean recurrent,
 			boolean isPrivate, boolean attachement, boolean invitation) throws URISyntaxException, Exception {
+		return generateAndSave(count, allDay, multiDay, recurrent, isPrivate, attachement, invitation, true);
+	}
 
+	/**
+	 *
+	 * @param count count of events per user
+	 * @param allDay create all day events?
+	 * @param multiDay create multi days events?
+	 * @param recurrent create recurrent events?
+	 * @param isPrivate create private events?
+	 * @param attachement create with attachement? works only on office extension clients
+	 * @param invitation create events with multiple attendants?
+	 * @param nationalChars
+	 * @return list of generated events
+	 * @throws URISyntaxException
+	 * @throws Exception
+	 */
+	public List<Appointment> generateAndSave(int count, boolean allDay, boolean multiDay, boolean recurrent,
+			boolean isPrivate, boolean attachement, boolean invitation, boolean nationalChars)
+			throws URISyntaxException, Exception {
+
+		initSubjects(nationalChars);
 		for (GeneratedUser user : users) {
 			try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 				for (int i = 0; i < count; i++) {
@@ -151,33 +175,53 @@ public class EventGenerator {
 		return users.get(offset).getUserAddr(domain);
 	}
 
-	private void initSubjects() {
-		subjects.add("Call");
-		subjects.add("Meeting");
-		subjects.add("Retrospective");
-		subjects.add("Monthly Assesment");
-		subjects.add("Job Inteview");
-		subjects.add("Money Raise Talk");
-		subjects.add("Language Lesson");
-		subjects.add("Language Home Work");
-		subjects.add("Piano Lesson");
-		subjects.add("Shopping with wife");
-		subjects.add("Beer session");
-		subjects.add("Secret Project");
-		subjects.add("PR Meeting");
-		subjects.add("HR Meeting");
-		subjects.add("Marketing Meeting");
-		subjects.add("Sales Meeting");
-		subjects.add("Board Meeting");
-		subjects.add("Sales Focus Group Meeting");
-		subjects.add("MRR Evaluation");
-		subjects.add("Presentation");
-		subjects.add("Kickoff project xyz");
-		subjects.add("Tea session");
-		subjects.add("Golf");
-		subjects.add("Tennis");
-		subjects.add("Visit cassino");
-		subjects.add("Online poker match");
+	private void initSubjects(boolean nationalChars) {
+		if (subjects.isEmpty() || this.nationalChars != nationalChars) {
+			subjects.clear();
+			this.nationalChars = nationalChars;
+
+			if (nationalChars) {
+				subjects.add("Volání s klientem");
+				subjects.add("Mýting");
+				subjects.add("Spíč ve škole");
+				subjects.add("Venčení žluťoučkého koníka");
+				subjects.add("встреча (ru)");
+				subjects.add("поход по магазинам (ru)");
+				subjects.add("Уроки игры на пианино (ru)");
+				subjects.add("пиво (ru)");
+				subjects.add("гольф (ru)");
+				subjects.add("оценка MRR (ru)");
+				subjects.add("матч в покер (ru)");
+				subjects.add("Русская рулетка (ru)");
+			} else {
+				subjects.add("Call");
+				subjects.add("Meeting");
+				subjects.add("Retrospective");
+				subjects.add("Monthly Assesment");
+				subjects.add("Job Inteview");
+				subjects.add("Money Raise Talk");
+				subjects.add("Language Lesson");
+				subjects.add("Language Home Work");
+				subjects.add("Piano Lesson");
+				subjects.add("Shopping with wife");
+				subjects.add("Beer session");
+				subjects.add("Secret Project");
+				subjects.add("PR Meeting");
+				subjects.add("HR Meeting");
+				subjects.add("Marketing Meeting");
+				subjects.add("Sales Meeting");
+				subjects.add("Board Meeting");
+				subjects.add("Sales Focus Group Meeting");
+				subjects.add("MRR Evaluation");
+				subjects.add("Presentation");
+				subjects.add("Kickoff project xyz");
+				subjects.add("Tea session");
+				subjects.add("Golf");
+				subjects.add("Tennis");
+				subjects.add("Visit cassino");
+				subjects.add("Online poker match");
+			}
+		}
 	}
 
 	private void setReminder(Appointment appointment, Date reminderDate) throws Exception {

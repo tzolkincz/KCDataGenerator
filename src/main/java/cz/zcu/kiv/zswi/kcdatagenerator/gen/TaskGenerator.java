@@ -24,6 +24,7 @@ public class TaskGenerator {
 	private static DateTime nowRounded;
 	private final List<String> subjects = new ArrayList<>();
 	private final List<Task> generatedTasks;
+	private boolean nationalChars = false;
 
 	private static final int DUE_DATE_HISTORY_MAX_DAYS = 100;
 	private static final int DUE_DATE_FUTURE_MAX_DAYS = 100;
@@ -37,11 +38,33 @@ public class TaskGenerator {
 
 		DateTime now = DateTime.now();
 		nowRounded = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), now.getHourOfDay(), 0);
-		initSubjects();
+		initSubjects(nationalChars);
 		generatedTasks = new ArrayList<>();
 	}
 
+	/**
+	 *
+	 * @param count
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws Exception
+	 */
+	@Deprecated
 	public List<Task> generateAndSave(int count) throws URISyntaxException, Exception {
+		return generateAndSave(count, true);
+	}
+
+	/**
+	 *
+	 * @param count
+	 * @param nationalChars
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws Exception
+	 */
+	public List<Task> generateAndSave(int count, boolean nationalChars) throws URISyntaxException, Exception {
+		initSubjects(nationalChars);
+
 		for (GeneratedUser user : users) {
 			try (ExchangeService service = ExchangeServiceFactory.create(exchangeUrl, user, domain)) {
 				for (int i = 0; i < count; i++) {
@@ -86,19 +109,37 @@ public class TaskGenerator {
 		return subjects.get((int) (random() * subjects.size()));
 	}
 
-	private void initSubjects() {
-		subjects.add("Buy milk");
-		subjects.add("Buy car");
-		subjects.add("Buy house");
-		subjects.add("Buy eggs");
-		subjects.add("Buy tickets");
-		subjects.add("Buy new suit");
-		subjects.add("Speak with boss about promotion");
-		subjects.add("Water the plants");
-		subjects.add("Pay bills");
-		subjects.add("Sell old car");
-		subjects.add("Plan vacation");
-		subjects.add("Book fly");
+	private void initSubjects(boolean nationalChars) {
+		if (subjects.isEmpty() || this.nationalChars != nationalChars) {
+			subjects.clear();
+			this.nationalChars = nationalChars;
+
+			if (nationalChars) {
+				subjects.add("купить молоко (ru)");
+				subjects.add("купить автомобиль (ru)");
+				subjects.add("купить дом (ru)");
+				subjects.add("купить яйца (ru)");
+				subjects.add("Полей растения (ru)");
+				subjects.add("План отпуск (ru)");
+				subjects.add("Koupit Mléko");
+				subjects.add("Koupit Dům");
+				subjects.add("Zaplatit složenky");
+				subjects.add("Prodat staré auto");
+			} else {
+				subjects.add("Buy milk");
+				subjects.add("Buy car");
+				subjects.add("Buy house");
+				subjects.add("Buy eggs");
+				subjects.add("Buy tickets");
+				subjects.add("Buy new suit");
+				subjects.add("Speak with boss about promotion");
+				subjects.add("Water the plants");
+				subjects.add("Pay bills");
+				subjects.add("Sell old car");
+				subjects.add("Plan vacation");
+				subjects.add("Book fly");
+			}
+		}
 	}
 
 	private void setReminder(Task t, Date reminderDate) throws Exception {

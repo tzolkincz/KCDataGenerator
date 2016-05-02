@@ -170,14 +170,14 @@ public class EmailGenerator {
 	}
 
 	private EmailMessage createMessage(ExchangeService service, GeneratedUser user, boolean flags,
-			boolean randCharsets, boolean attachments, boolean externalSender) throws Exception {
+			boolean nationalChars, boolean attachments, boolean externalSender) throws Exception {
 
 		MultiPartEmail email = new MultiPartEmail();
 		email.setHostName("smtp." + domain); //lib just need this param set
 
 		email.setFrom(getSender(externalSender));
-		email.setSubject(getSubject());
-		email.setMsg(getEmailText());
+		email.setSubject(getSubject(nationalChars));
+		email.setMsg(getEmailText(nationalChars));
 		email.addTo(user.getUserAddr(domain));
 		email.buildMimeMessage();
 
@@ -204,11 +204,17 @@ public class EmailGenerator {
 		return stream.toByteArray();
 	}
 
-	private String getSubject() {
+	private String getSubject(boolean nationalChars) {
+		if (nationalChars) {
+			return "Тема письма (ru)";
+		}
 		return "Default email subject";
 	}
 
-	private String getEmailText() {
+	private String getEmailText(boolean nationalChars) {
+		if (nationalChars) {
+			return "давным-давно. был дед Мраз. Конец. (ru)";
+		}
 		return "This is a test mail ... :-)";
 	}
 

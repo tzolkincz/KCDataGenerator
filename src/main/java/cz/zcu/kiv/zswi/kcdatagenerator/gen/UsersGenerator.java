@@ -53,6 +53,7 @@ public class UsersGenerator {
 		u.setLoginName(login);
 		u.setPassword(passwd);
 		u.setDomainId(domainId);
+		u.setPublishInGal(true);
 
 		generatedUsers.add(new GeneratedUser(firstName, lastName, passwd, login));
 		return u;

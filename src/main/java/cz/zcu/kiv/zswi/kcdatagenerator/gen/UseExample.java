@@ -24,10 +24,12 @@ public class UseExample {
 			domainId = domain.getId();
 		}
 
+		NameGenerator nameGenerator = new NameGenerator(null, null);
+
 		//generovani uzivatelu
 		//NameGenerator prijma jako argumenty cesty ke slovnikum (fist, last names).
 		//  Kdyz je null, pouziji se implicitni slovniky
-		UsersGenerator g = new UsersGenerator(client, domainId, new NameGenerator(null, null));
+		UsersGenerator g = new UsersGenerator(client, domainId, nameGenerator);
 		g.generate(1);
 
 		//ulozeni a vypis chyb
@@ -46,21 +48,23 @@ public class UseExample {
 		String ewsUrl = "http://localhost:8800/Ews/Exchange.asmx";
 //		String ewsUrl = "http://10.0.0.104:8800/Ews/Exchange.asmx";
 
-		EmailGenerator eg = new EmailGenerator(ewsUrl, users, domainName);
-		eg.generateAndSave(5, 1, true, true, true, true);
-		eg.generateAndSave(5, 1, true, true, true, true);
+//		users.clear();
+//		users.add(new GeneratedUser("a", "b", "u", "dawsonevelyn30"));
 
-		ContactGenerator cg = new ContactGenerator(ewsUrl, users, domainName);
+		EmailGenerator eg = new EmailGenerator(ewsUrl, users, domainName);
+		eg.generateAndSave(10, 1.0, true, true, true, true);
+
+		ContactGenerator cg = new ContactGenerator(ewsUrl, users, domainName, nameGenerator);
 		cg.generateAndSave(1);
 
 		EventGenerator ceg = new EventGenerator(ewsUrl, users, domainName);
-		ceg.generateAndSave(100, true, true, true, true, true, true);
+		ceg.generateAndSave(100, true, true, true, true, true, true, true);
 
 		TaskGenerator tg = new TaskGenerator(ewsUrl, users, domainName);
-		tg.generateAndSave(10);
+		tg.generateAndSave(10, true);
 
 		NotesGenerator ng = new NotesGenerator(ewsUrl, users, domainName);
-		ng.generateAndSave(5);
+		ng.generateAndSave(5, true);
 	}
 
 }

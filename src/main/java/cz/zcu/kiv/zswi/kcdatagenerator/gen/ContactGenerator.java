@@ -18,12 +18,20 @@ public class ContactGenerator {
 	private final String domain;
 	private final NameGenerator nameGenerator;
 	private final List<Contact> generatedContacts;
+	private boolean loadStateAfterSave = false;
 
+	@Deprecated
 	public ContactGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException {
+		this(exchangeUrl, users, domain, new NameGenerator(null, null));
+	}
+
+	public ContactGenerator(String exchangeUrl, List<GeneratedUser> users,
+			String domain, NameGenerator nameGenerator) throws IOException {
+
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
-		this.nameGenerator = new NameGenerator(null, null);
+		this.nameGenerator = nameGenerator;
 		generatedContacts = new ArrayList<>();
 	}
 
@@ -54,6 +62,10 @@ public class ContactGenerator {
 					contact.getPhysicalAddresses().setPhysicalAddress(PhysicalAddressKey.Home, paEntry1);
 					contact.save();
 
+					if (loadStateAfterSave) {
+						contact.load();
+					}
+
 					generatedContacts.add(contact);
 				}
 			} catch (Exception e) {
@@ -61,6 +73,16 @@ public class ContactGenerator {
 			}
 		}
 		return generatedContacts;
+	}
+
+	/**
+	 * Load state for unit tests. Cant access generated properties without that. Load state needs active ews
+	 * service connection
+	 *
+	 * @param loadStateAfterSave
+	 */
+	public void setLoadStateAfterSave(boolean loadStateAfterSave) {
+		this.loadStateAfterSave = loadStateAfterSave;
 	}
 
 }

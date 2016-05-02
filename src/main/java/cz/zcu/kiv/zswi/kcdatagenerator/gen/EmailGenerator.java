@@ -13,12 +13,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.mail.MessagingException;
 import microsoft.exchange.webservices.data.core.ExchangeService;
+import microsoft.exchange.webservices.data.core.enumeration.permission.folder.FolderPermissionLevel;
+import microsoft.exchange.webservices.data.core.enumeration.property.MapiPropertyType;
+import microsoft.exchange.webservices.data.core.enumeration.property.StandardUser;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
+import microsoft.exchange.webservices.data.property.complex.FolderPermission;
 import microsoft.exchange.webservices.data.property.complex.MimeContent;
+import microsoft.exchange.webservices.data.property.definition.ExtendedPropertyDefinition;
 import microsoft.exchange.webservices.data.search.FolderView;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailAttachment;
@@ -32,15 +37,18 @@ public class EmailGenerator {
 	private final List<String> folders = new ArrayList<>();
 	private final NameGenerator nameGenerator;
 	private final List<EmailMessage> generatedEmails;
+	private boolean loadStateAfterSave = false;
 
 	public static final double READED_PROBABILITY = 0.95;
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
 	public static final double ATTACHMENT_PROBABILITY = 0.05;
 	public static final double FLAGS_PROBABILITY = 0.05;
-	public static final double SHARED_FOLDER_PROBABILITY = 0.2 * 10;
+	public static final double SHARED_FOLDER_PROBABILITY = 0.15;
 	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
 
-	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain) throws IOException, URISyntaxException {
+	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain)
+			throws IOException, URISyntaxException {
+
 		this.exchangeUrl = exchangeUrl;
 		this.users = users;
 		this.domain = domain;
@@ -79,17 +87,10 @@ public class EmailGenerator {
 								service, user, flags, randCharsets, attachments, externalSender);
 						msg.save(usersFolders.get(i % usersFolders.size()));
 
+						if (loadStateAfterSave) {
+							msg.load();
+						}
 						generatedEmails.add(msg);
-
-						//WIP: reply
-//						ResponseMessage reply = msg.createReply(true);
-//						reply.setBodyPrefix(new MessageBody("fwd:"));
-//						reply.getToRecipients().add("bar@example.com");
-//						reply.getCcRecipients().add("foo@example.com");
-//						reply.sendAndSaveCopy(WellKnownFolderName.SentItems);
-//
-//						msg.update(ConflictResolutionMode.AutoResolve);
-
 					}
 				} catch (Exception e) {
 					return e;
@@ -155,12 +156,10 @@ public class EmailGenerator {
 				if (current == null) {
 					Folder folder = new Folder(service);
 					folder.setDisplayName(f);
-
-//					if (Math.random() < SHARED_FOLDER_PROBABILITY) {
-//						folder.save(WellKnownFolderName.PublicFoldersRoot);
-//					} else {
 					folder.save(WellKnownFolderName.Inbox);
-//					}
+
+					setSharing(folder);
+
 					usersFolders.add(folder.getId());
 				} else {
 					usersFolders.add(current.getId());
@@ -171,14 +170,14 @@ public class EmailGenerator {
 	}
 
 	private EmailMessage createMessage(ExchangeService service, GeneratedUser user, boolean flags,
-			boolean randCharsets, boolean attachments, boolean externalSender) throws Exception {
+			boolean nationalChars, boolean attachments, boolean externalSender) throws Exception {
 
 		MultiPartEmail email = new MultiPartEmail();
 		email.setHostName("smtp." + domain); //lib just need this param set
 
 		email.setFrom(getSender(externalSender));
-		email.setSubject(getSubject());
-		email.setMsg(getEmailText());
+		email.setSubject(getSubject(nationalChars));
+		email.setMsg(getEmailText(nationalChars));
 		email.addTo(user.getUserAddr(domain));
 		email.buildMimeMessage();
 
@@ -187,7 +186,7 @@ public class EmailGenerator {
 		}
 
 		EmailMessage msg = new EmailMessage(service);
-		msg.setMimeContent(new MimeContent("utf-8", emailToBytes(email)));
+		msg.setMimeContent(new MimeContent("UTF-8", emailToBytes(email)));
 		if (Math.random() < READED_PROBABILITY) {
 			msg.setIsRead(true);
 		}
@@ -205,11 +204,17 @@ public class EmailGenerator {
 		return stream.toByteArray();
 	}
 
-	private String getSubject() {
+	private String getSubject(boolean nationalChars) {
+		if (nationalChars) {
+			return "Тема письма (ru)";
+		}
 		return "Default email subject";
 	}
 
-	private String getEmailText() {
+	private String getEmailText(boolean nationalChars) {
+		if (nationalChars) {
+			return "давным-давно. был дед Мраз. Конец. (ru)";
+		}
 		return "This is a test mail ... :-)";
 	}
 
@@ -232,17 +237,39 @@ public class EmailGenerator {
 	}
 
 	private void setFlasgs(EmailMessage email) throws Exception {
-//		ExtendedPropertyDefinition propAlertTime = new ExtendedPropertyDefinition(
-//				DefaultExtendedPropertySet.Common, 0x4029, MapiPropertyType.String);
-//
-//		email.setExtendedProperty(propAlertTime, "SMTP");
-//
-//		ExtendedPropertyDefinition propAlertTime2 = new ExtendedPropertyDefinition(
-//				DefaultExtendedPropertySet.Common, 0x402B, MapiPropertyType.String);
-//		email.setExtendedProperty(propAlertTime2, "My User");
-//
-//		ExtendedPropertyDefinition propSetAlarm = new ExtendedPropertyDefinition(
-//				DefaultExtendedPropertySet.Common, 0x402A, MapiPropertyType.String);
-//		email.setExtendedProperty(propSetAlarm, getSender(true));
+		ExtendedPropertyDefinition flagStatus = new ExtendedPropertyDefinition(
+				0x1090, MapiPropertyType.Integer);
+		email.setExtendedProperty(flagStatus, 2);
+
+		ExtendedPropertyDefinition flagFlags = new ExtendedPropertyDefinition(
+				0x0E2B, MapiPropertyType.Integer);
+		email.setExtendedProperty(flagFlags, 1);
 	}
+
+	private void setSharing(Folder folder) throws Exception {
+
+		//sharing - must be set as update
+		if (Math.random() < SHARED_FOLDER_PROBABILITY) {
+			folder.getPermissions().add(
+					new FolderPermission(StandardUser.Anonymous, FolderPermissionLevel.Contributor));
+		}
+		if (Math.random() < SHARED_FOLDER_PROBABILITY) {
+			for (int i = 0; i < (int) (Math.random() * 5); i++) {
+				folder.getPermissions().add(
+						new FolderPermission(getSender(false), FolderPermissionLevel.Contributor));
+			}
+		}
+		folder.update();
+	}
+
+	/**
+	 * Load state for unit tests. Cant access generated properties without that. Load state needs active ews
+	 * service connection
+	 *
+	 * @param loadStateAfterSave
+	 */
+	public void setLoadStateAfterSave(boolean loadStateAfterSave) {
+		this.loadStateAfterSave = loadStateAfterSave;
+	}
+
 }

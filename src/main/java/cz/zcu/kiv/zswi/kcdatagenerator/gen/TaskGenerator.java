@@ -12,6 +12,7 @@ import microsoft.exchange.webservices.data.core.enumeration.property.Importance;
 import microsoft.exchange.webservices.data.core.enumeration.property.MapiPropertyType;
 import microsoft.exchange.webservices.data.core.enumeration.service.TaskStatus;
 import microsoft.exchange.webservices.data.core.service.item.Task;
+import microsoft.exchange.webservices.data.property.complex.MessageBody;
 import microsoft.exchange.webservices.data.property.definition.ExtendedPropertyDefinition;
 import org.joda.time.DateTime;
 
@@ -68,6 +69,7 @@ public class TaskGenerator {
 					}
 
 					t.setSubject(getSubject());
+					t.setBody(new MessageBody(t.getSubject() + " task"));
 
 					setReminder(t, new DateTime(t.getDueDate()).minusDays(1).toDate());
 

@@ -7,9 +7,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class EventGeneratorIT extends BaseTest {
+public class EventGeneratorTest extends BaseTest {
 
-	public EventGeneratorIT() throws IOException {
+	public EventGeneratorTest() throws IOException {
 		super();
 	}
 

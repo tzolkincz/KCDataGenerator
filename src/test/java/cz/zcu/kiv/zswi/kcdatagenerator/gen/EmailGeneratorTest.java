@@ -7,9 +7,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class EmailGeneratorIT extends BaseTest {
+public class EmailGeneratorTest extends BaseTest {
 
-	public EmailGeneratorIT() throws IOException {
+	public EmailGeneratorTest() throws IOException {
 		super();
 	}
 

@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class GeneratedUserIT {
+public class GeneratedUserTest {
 
 	GeneratedUser user;
 	private static final String USERNAME = "username";

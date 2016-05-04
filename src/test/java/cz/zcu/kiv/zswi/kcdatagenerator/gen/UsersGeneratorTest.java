@@ -6,11 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class UsersGeneratorIT extends BaseTest {
+public class UsersGeneratorTest extends BaseTest {
 
 	ApiClient connectApiClient;
 
-	public UsersGeneratorIT() throws IOException {
+	public UsersGeneratorTest() throws IOException {
 		super();
 	}
 
@@ -48,7 +48,11 @@ public class UsersGeneratorIT extends BaseTest {
 		generator.generate(1);
 
 		for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : generator.save()) {
-			assertNull(e);
+			if (e != null) {
+				assertEquals(e.getCode().intValue(), 1001); //user allready exists
+			} else {
+				assertNull(e); //yes, it is null
+			}
 		}
 	}
 

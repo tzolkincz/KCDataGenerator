@@ -5,9 +5,9 @@ import microsoft.exchange.webservices.data.core.ExchangeService;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class ExchangeServiceFactoryIT extends BaseTest {
+public class ExchangeServiceFactoryTest extends BaseTest {
 
-	public ExchangeServiceFactoryIT() throws IOException {
+	public ExchangeServiceFactoryTest() throws IOException {
 		super();
 	}
 

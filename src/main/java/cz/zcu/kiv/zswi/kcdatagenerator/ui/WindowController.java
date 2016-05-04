@@ -2,25 +2,19 @@ package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.swing.event.ChangeListener;
 import javax.xml.stream.XMLStreamException;
 
 import com.kerio.lib.json.api.connect.admin.iface.Domains;
 import com.kerio.lib.json.api.connect.admin.struct.Domain;
 import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;
 
-import cz.zcu.kiv.zswi.kcdatagenerator.gen.ApiClient;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.ContactGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.EmailGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.EventGenerator;
@@ -29,13 +23,10 @@ import cz.zcu.kiv.zswi.kcdatagenerator.gen.NameGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.NotesGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.TaskGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.UsersGenerator;
-import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -46,21 +37,18 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.effect.Effect;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import microsoft.exchange.webservices.data.core.EwsServiceXmlWriter;
-import microsoft.exchange.webservices.data.core.ExchangeService;
+import microsoft.exchange.webservices.data.core.service.item.Appointment;
+import microsoft.exchange.webservices.data.core.service.item.Contact;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
-import microsoft.exchange.webservices.data.credential.WebCredentials;
 
 public class WindowController implements Initializable {
 
@@ -117,6 +105,9 @@ public class WindowController implements Initializable {
 
     @FXML
     private TextField tasksCountData;
+    
+    @FXML
+    private CheckBox tasksNationalChars;
 
     /********** EVENTS *********/
 
@@ -151,6 +142,9 @@ public class WindowController implements Initializable {
 
     @FXML
     private TextField contactsCountData;
+    
+    @FXML
+    private CheckBox contactsNationalChars;
 
     /*********** NOTES *********/
 
@@ -159,7 +153,23 @@ public class WindowController implements Initializable {
 
     @FXML
     private TextField notesCountData;
+    
+    @FXML
+    private CheckBox notesNationalChars;
 
+    /********* DOMAINS *********/
+    
+    @FXML
+    private GridPane domainsTable;
+    
+    /*********** TABS **********/
+    
+    @FXML
+    private GridPane tabsContainer;
+    
+    @FXML
+    private TabPane tabs;
+    
     /*********** MAIN **********/
 
     @FXML
@@ -170,6 +180,12 @@ public class WindowController implements Initializable {
     private static int userCount, emailCount, contactCount, eventCount, taskCount, noteCount;
     private Stage windowStage;
     private File firstnamesFile, lastnamesFile;
+    
+    private List<Contact> contacts = new ArrayList<>();
+    private List<Appointment> events = new ArrayList<>();
+    private List<EmailMessage> emails = new ArrayList<>();
+    private List<EmailMessage> notes = new ArrayList<>();
+    private List<microsoft.exchange.webservices.data.core.service.item.Task> tasks = new ArrayList<>();
 
     @FXML
     private void handleUserGenerationAction(ActionEvent event) {
@@ -188,26 +204,6 @@ public class WindowController implements Initializable {
         System.exit(0);
         Platform.exit();
     }
-
-    // @FXML
-    // private void handleAdvancedAction() {
-    // if (advanced.isSelected()) {
-    //
-    // } else {
-    //
-    // }
-    // }
-    //
-    // @FXML
-    // public void handleUsersAction() {
-    // if (users.isSelected()) {
-    // usersTable.setVisible(true);
-    // GridPane.setColumnIndex(emailsTable, 1);
-    // } else {
-    // usersTable.setVisible(false);
-    // GridPane.setColumnIndex(emailsTable, 0);
-    // }
-    // }
 
     @FXML
     public void handleChooseFirstNameFileAction() {
@@ -260,93 +256,53 @@ public class WindowController implements Initializable {
 
         NameGenerator nameGenerator = new NameGenerator((firstnamesFile == null) ? null : firstnamesFile.toPath(),
                 (lastnamesFile == null) ? null : lastnamesFile.toPath());
-        UsersGenerator usersGenerator = new UsersGenerator(loginData.client, loginData.domainId, nameGenerator);
+        final UsersGenerator usersGenerator = new UsersGenerator(loginData.client, loginData.domainId, nameGenerator);
 
-        List<GeneratedUser> generatedUsers = usersGenerator.getUsers();
-        generatedUsers
-                .add(new GeneratedUser(loginData.username, loginData.username, loginData.password, loginData.username));
+        final List<GeneratedUser> generatedUsers = usersGenerator.getUsers();
 
         EmailGenerator emailGenerator = new EmailGenerator(ewsUrl, generatedUsers, domainName);
-        ContactGenerator contactGenerator = new ContactGenerator(ewsUrl, generatedUsers, domainName);
+        ContactGenerator contactGenerator = new ContactGenerator(ewsUrl, generatedUsers, domainName, nameGenerator);
         EventGenerator eventGenerator = new EventGenerator(ewsUrl, generatedUsers, domainName);
         TaskGenerator taskGenerator = new TaskGenerator(ewsUrl, generatedUsers, domainName);
         NotesGenerator noteGenerator = new NotesGenerator(ewsUrl, generatedUsers, domainName);
 
         Task<Void> task = new Task<Void>() {
 
-            int progressCounter = 1;
 
             @Override
-            public Void call() throws URISyntaxException, FileNotFoundException, XMLStreamException {
-                for (int i = 0; i < userCount; i++) {
-                    usersGenerator.generate(1);
-                    updateProgress(progressCounter, userCount + emailCount + contactCount + noteCount + taskCount);
-                    progressCounter++;
-                }
+            public Void call() throws URISyntaxException, FileNotFoundException, XMLStreamException, Exception {
+            	
+        		usersGenerator.generate(1);
 
-                //ulozeni a vypis chyb
-                for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : usersGenerator.save()) {
-                    System.out.println(e);
-                }
+        		//ulozeni a vypis chyb
+        		for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : usersGenerator.save()) {
+        			System.out.println(e);
+        		}
 
-                for (int j = 0; j < emailCount; j++) {
-                    try {
-                        emailGenerator.generateAndSave(1, emailFoldersSlider.getValue(), flag.isSelected(),
-                                randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
-                    } catch (Exception e) {
-                        // TODO alert?
-                        e.printStackTrace();
-                    }
-                    updateProgress(progressCounter, userCount + emailCount + contactCount + noteCount + taskCount);
-                    progressCounter++;
-                }
+        		//vypis uzivatelu
+        		List<GeneratedUser> users = usersGenerator.getUsers();
+        		for (GeneratedUser gu : users) {
+        			System.out.println(gu.getFirstName() + " " + gu.getLastName() + " " + " " + gu.getUsername() + ":" + gu.getPassword());
+        		}
 
+        		String domainName = "localhost";
+        		String ewsUrl = "http://localhost:8800/Ews/Exchange.asmx";
 
-                 for (int k = 0; k < contactCount; k++) {
-                     try {
-                         contactGenerator.generateAndSave(1);
-                     } catch (Exception e) {
-                        //TODO alert?
-                         e.printStackTrace();
-                     }
-                     updateProgress(progressCounter, userCount + emailCount + contactCount + noteCount + taskCount);
-                     progressCounter++;
-                 }
+        		emails = emailGenerator.generateAndSave(emailCount, emailFoldersSlider.getValue(), flag.isSelected(), randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
+        		updateProgress(emailCount, userCount + emailCount + contactCount + noteCount + taskCount);
+        		
+        		contacts = contactGenerator.generateAndSave(contactCount);
+        		updateProgress(emailCount + contactCount, userCount + emailCount + contactCount + noteCount + taskCount);
 
+        		events = eventGenerator.generateAndSave(eventCount, fullDay.isSelected(), multipleDays.isSelected(), repeatable.isSelected(), privates.isSelected(), eventAttachment.isSelected(), invite.isSelected(), contactsNationalChars.isSelected());
+        		updateProgress(emailCount + contactCount + eventCount, userCount + emailCount + contactCount + noteCount + taskCount);
+        		
+        		tasks = taskGenerator.generateAndSave(taskCount, tasksNationalChars.isSelected());
+        		updateProgress(emailCount + contactCount + eventCount + taskCount, userCount + emailCount + contactCount + noteCount + taskCount);
 
-                 for (int l = 0; l < eventCount; l++) {
-                     try {
-                         eventGenerator.generateAndSave(1, fullDay.isSelected(), multipleDays.isSelected(), repeatable.isSelected(), privates.isSelected(), eventAttachment.isSelected(), invite.isSelected());
-                     } catch (Exception e) {
-                         //TODO alert?
-                         e.printStackTrace();
-                     }
-                     updateProgress(progressCounter, userCount + emailCount + contactCount + noteCount + taskCount);
-                     progressCounter++;
-                }
-
-                 for (int m = 0; m < noteCount; m++) {
-                     try {
-                         noteGenerator.generateAndSave(1);
-                     } catch (Exception e) {
-                         //TODO alert?
-                         e.printStackTrace();
-                     }
-                     updateProgress(progressCounter, userCount + emailCount + contactCount + noteCount + taskCount);
-                     progressCounter++;
-                 }
-
-                 for (int n = 0; n < taskCount; n++) {
-                     try {
-                         taskGenerator.generateAndSave(1);
-                     } catch (Exception e) {
-                         //TODO alert?
-                         e.printStackTrace();
-                     }
-                     updateProgress(progressCounter, userCount + emailCount + contactCount + noteCount + taskCount);
-                     progressCounter++;
-                 }
-
+        		notes = noteGenerator.generateAndSave(noteCount, notesNationalChars.isSelected());
+        		updateProgress(emailCount + contactCount + eventCount + taskCount + noteCount, userCount + emailCount + contactCount + noteCount + taskCount);
+            	 
                 return null;
             }
 
@@ -358,8 +314,8 @@ public class WindowController implements Initializable {
                     GeneratedUsersController generatedUsersController = fxmlLoader
                             .<GeneratedUsersController> getController();
 
-                    generatedUsersController.setData(generatedUsers, emailGenerator.getMessages(), contactGenerator.getContacts(), eventGenerator.getEvents(), noteGenerator.getNotes(), taskGenerator.getTasks(), ewsUrl, loginData);
-
+                    generatedUsersController.setData(generatedUsers, emails, contacts, events, notes, tasks, ewsUrl, loginData);
+                   
                     Stage stage = new Stage();
                     stage.setTitle("Generated users");
                     stage.setScene(new Scene(root1));
@@ -387,7 +343,6 @@ public class WindowController implements Initializable {
         LoginData loginData = LoginDataSession.getInstance().getLoginData();
         Domain[] domainsRaw = loginData.client.getApi(Domains.class).get(new SearchQuery()).getList();
 
-        System.out.println(domainsRaw);
 
         for (int i = 0; i < domainsRaw.length; i++) {
             domainBox.getItems().add(domainsRaw[i].getName());
@@ -403,6 +358,8 @@ public class WindowController implements Initializable {
                 emailFoldersSliderLabel.setText("Folders: " + newValue.intValue() + "%");
             }
         });
+        
+        tabs.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
     }
 
     // TODO rozsahy
@@ -453,7 +410,7 @@ public class WindowController implements Initializable {
         if (this.tasksCountData.getText().isEmpty()) {
             this.tasksCountData.setText(Integer.toString(ZERO_CONSTANT));
         } else {
-            taskCount = Integer.parseInt(this.eventsCountData.getText());
+            taskCount = Integer.parseInt(this.tasksCountData.getText());
             if (taskCount > 1000000) {
                 showNumberError(0, 1000000);
                 this.tasksCountData.setText("");

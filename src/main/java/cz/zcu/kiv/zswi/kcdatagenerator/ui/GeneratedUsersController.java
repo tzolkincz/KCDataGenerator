@@ -36,36 +36,92 @@ import microsoft.exchange.webservices.data.core.service.item.Contact;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.core.service.item.Task;
 
+/**
+ * Class for window with generated users actions and items.
+ * @author Daniel Holubář
+ *
+ */
 public class GeneratedUsersController implements Initializable {
 
+	/**
+	 * Window with generated users table.
+	 */
     @FXML
     private BorderPane usersTable;
 
+    /**
+     * Table with generated users data.
+     */
     @FXML
     private TableView<GeneratedUser> generatedUsersTable;
 
+    /**
+     * Column with user's firstname.
+     */
     @FXML
     private TableColumn<GeneratedUser, String> firstName;
 
+    /**
+     * Column with user's lastname.
+     */
     @FXML
     private TableColumn<GeneratedUser, String> lastName;
 
+    /**
+     * Column with user's username.
+     */
     @FXML
     private TableColumn<GeneratedUser, String> username;
 
+    /**
+     * Column with user's password.
+     */
     @FXML
     private TableColumn<GeneratedUser, String> password;
 
+    /**
+     * List of generated users.
+     */
     private ObservableList<GeneratedUser> generatedUsers;
+    
+    /**
+     * List of generated emails.
+     */
     private List<EmailMessage> emailMessages;
+    
+    /**
+     * List of generated contacts.
+     */
     private List<Contact> contacts;
+    
+    /**
+     * List of generated events.
+     */
     private List<Appointment> events;
+    
+    /**
+     * List of generated notes.
+     */
     private List<EmailMessage> notes;
+    
+    /**
+     * List of generated tasks.
+     */
     private List<Task> tasks;
 
+    /**
+     * URL of exchange service.
+     */
     private String ewsUrl;
+    
+    /**
+     * Container for login data of logged in user.
+     */
     private LoginData loginData;
 
+    /**
+     * Triggers when new instance of class is made.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -86,6 +142,17 @@ public class GeneratedUsersController implements Initializable {
         generatedUsersTable.setItems(generatedUsers);
     }
 
+    /**
+     * Fills lists with data.
+     * @param generatedData generated users
+     * @param emailMessages generated emails
+     * @param contacts generated contacts
+     * @param events generated events
+     * @param notes generated notes
+     * @param tasks generated tasks
+     * @param ewsUrl url of exchange service
+     * @param loginData login data of user
+     */
     public void setData(List<GeneratedUser> generatedData, List<EmailMessage> emailMessages, List<Contact> contacts, List<Appointment> events, List<EmailMessage> notes, List<Task> tasks, String ewsUrl,
             LoginData loginData) {
         generatedUsers.addAll(generatedData);
@@ -97,7 +164,10 @@ public class GeneratedUsersController implements Initializable {
         this.notes = notes;
         this.tasks = tasks;
     }
-    //TODO jedna metoda
+    
+    /**
+     * Exports emails into XML file.
+     */
     @FXML
     private void handleExportEmailAction() {
         FileChooser fileChooser = new FileChooser();
@@ -144,6 +214,9 @@ public class GeneratedUsersController implements Initializable {
         }
     }
 
+    /**
+     * Exports contacts into XML file.
+     */
     @FXML
     private void handleExportContactsAction() {
         FileChooser fileChooser = new FileChooser();
@@ -189,6 +262,9 @@ public class GeneratedUsersController implements Initializable {
         }
     }
 
+    /**
+     * Exports events into XML file.
+     */
     @FXML
     private void handleExportEventsAction() {
         FileChooser fileChooser = new FileChooser();
@@ -234,6 +310,9 @@ public class GeneratedUsersController implements Initializable {
         }
     }
 
+    /**
+     * Exports notes into XML file.
+     */
     @FXML
     private void handleExportNotesAction() {
         FileChooser fileChooser = new FileChooser();
@@ -279,6 +358,9 @@ public class GeneratedUsersController implements Initializable {
         }
     }
 
+    /**
+     * Exports tasks into XML file.
+     */
     @FXML
     private void handleExportTasksAction() {
         FileChooser fileChooser = new FileChooser();

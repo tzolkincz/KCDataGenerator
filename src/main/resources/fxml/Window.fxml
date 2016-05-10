@@ -11,7 +11,16 @@
         <MenuBar>
             <Menu text="_Action" mnemonicParsing="true">
                 <items>
+                	<MenuItem text="_Save properties" fx:id="save" onAction="#handleSavePropertiesAction" />
+                    <MenuItem text="_Load properties" fx:id="load" onAction="#handleLoadPropertiesAction" />
                     <MenuItem text="_Exit" fx:id="exit" onAction="#handleExitAction" />
+                </items>
+            </Menu>
+            <Menu text="_Import" mnemonicParsing="true">
+                <items>
+                	<MenuItem text="_Import Emails" fx:id="importEmails" onAction="#handleImportEmails" />
+                	<SeparatorMenuItem  />
+                	<MenuItem text="_Import XML" fx:id="importXML" onAction="#handleImportXML" />
                 </items>
             </Menu>
         </MenuBar>
@@ -114,7 +123,7 @@
 						                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 						                <TextField fx:id="tasksCountData" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 						                
-						                <CheckBox fx:id="taskNationalChars" text="National characters" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+						                <CheckBox fx:id="tasksNationalChars" text="National characters" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 						            </GridPane>
 					            </content>
 					        </Tab>
@@ -129,6 +138,7 @@
             <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
             <ProgressBar fx:id="progressBar" prefHeight="25.0" />
             <Button text="Generate" onAction="#handleUserGenerationAction"/>
+            <Button text="Quick generate" onAction="#handleQuickGenerationAction"/>
         </VBox>
     </bottom>
 </BorderPane>

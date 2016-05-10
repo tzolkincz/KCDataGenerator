@@ -1,10 +1,5 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
-import com.kerio.lib.json.api.connect.admin.iface.Domains;
-import com.kerio.lib.json.api.connect.admin.struct.Domain;
-import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;
-
-import cz.zcu.kiv.zswi.kcdatagenerator.gen.ApiClient;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,28 +8,55 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class Window extends Application {
+/**
+ * Main class that starts whole application.
+ * @author Daniel Holubář
+ *
+ */
+public class Main extends Application {
 
-    // path to FXML file - path relative to classpath
+    /**
+     * Path to fxml file.
+     */
     private static final String LOGIN_WINDOW_XML =  "/fxml/Login.fxml";
 
-    // width of the window
+
+    /**
+     * Width of login window.
+     */
     private static final double WINDOW_WIDTH = 300;
 
-    // height of the window
+    /**
+     * Loader for FXML file.
+     */
     private static final double WINDOW_HEIGHT = 200;
 
-    // loader of FXML file
+    /**
+     * Width of login window.
+     */
     private FXMLLoader loader;
 
-    private Scene generation, login;
+    /**
+     * Scene for login window.
+     */
+    private Scene login;
 
+    /**
+     * Main stage of window.
+     */
     private Stage primaryStage;
 
+    /**
+     * Main class, that starts application.
+     * @param args external arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Opens window.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
@@ -44,9 +66,13 @@ public class Window extends Application {
         this.primaryStage.show();
     }
 
+    /**
+     * Creates scene from FXML file.
+     * @return scene
+     */
     private Scene createScene() {
         // loading FXML file
-        loader = new FXMLLoader(getClass().getResource(LOGIN_WINDOW_XML));// loading CSS file
+        loader = new FXMLLoader(getClass().getResource(LOGIN_WINDOW_XML));
 
         Pane rootPane = null;
 
@@ -65,15 +91,16 @@ public class Window extends Application {
                                  "Error: " + e.getMessage() + "\n" +
                                  "Exception: " + e.getClass().getName());
             alert.showAndWait();
+           	e.printStackTrace();
             System.exit(1);
         }
 
         // creating scene from loaded panel
-        generation = new Scene(rootPane, WINDOW_WIDTH, WINDOW_HEIGHT);
+        login = new Scene(rootPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         // removing all CSS from the scene - only default look is used
-        generation.getStylesheets().clear();
+        login.getStylesheets().clear();
 
-        return generation;
+        return login;
     }
 
 }

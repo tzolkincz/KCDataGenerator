@@ -15,34 +15,60 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
+/**
+ * Class for login window actions and items.
+ * @author Daniel Holubář
+ */
 public class LoginController {
-
+	
+	/**
+	 * Field for username credential.
+	 */
     @FXML
     private TextField username;
 
+    /**
+	 * Field for password credential.
+	 */
     @FXML
     private PasswordField password;
 
+    /**
+	 * Field for url of server.
+	 */
     @FXML
     private TextField url;
 
+    /**
+     * Action will exit application.
+     * @param event event of action
+     */
     @FXML
     private void handleExitAction(ActionEvent event) {
         System.exit(0);
         Platform.exit();
     }
 
+    /**
+     * Action will trigger when Enter key is pressed.
+     * @param event event of action
+     */
     @FXML
     public void handleEnterPressed(ActionEvent event) {
        this.handleLoginAction(event);
     }
 
+    /**
+     * Action will log user in according to credentials filled.
+     * @param event event of action
+     */
     @FXML
     private void handleLoginAction(ActionEvent event) {
-        // pripojeni api clienta
+        
         ApiClient client = new ApiClient();
 
         try {
@@ -56,7 +82,7 @@ public class LoginController {
             alert.showAndWait();
         }
 
-        //vyber domeny
+        
         Domain[] domains = client.getApi(Domains.class).get(new SearchQuery()).getList();
 
         String domainId = "";
@@ -66,7 +92,7 @@ public class LoginController {
             domainId = domain.getId();
         }
         LoginDataSession.getInstance().setLoginData(new LoginData(client, domainId, username.getText(), password.getText()));
-
+        
         ((Stage)((Node)event.getTarget()).getScene().getWindow()).close();
 
         try {

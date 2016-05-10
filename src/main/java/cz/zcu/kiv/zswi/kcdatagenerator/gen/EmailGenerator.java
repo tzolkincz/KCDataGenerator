@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,10 +42,9 @@ public class EmailGenerator {
 
 	public static final double READED_PROBABILITY = 0.95;
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
-	public static final double ATTACHMENT_PROBABILITY = 0.05;
+	public static final double ATTACHMENT_PROBABILITY = 1.05;
 	public static final double FLAGS_PROBABILITY = 0.05;
 	public static final double SHARED_FOLDER_PROBABILITY = 0.15;
-	public static final String DEFAULT_ATTACHMENT_PATH = "/attachments/";
 
 	public EmailGenerator(String exchangeUrl, List<GeneratedUser> users, String domain)
 			throws IOException, URISyntaxException {
@@ -221,17 +221,11 @@ public class EmailGenerator {
 	private EmailAttachment createAttachment() throws MalformedURLException {
 		EmailAttachment attachment = new EmailAttachment();
 
-		List<String> attachments = new ArrayList<>();
-		attachments.add("files.zip");
-		attachments.add("example.jpg");
-		attachments.add("img.png");
-
-		String randAttach = attachments.get((int) (Math.random() * attachments.size()));
-
-		attachment.setPath(getClass().getResource(DEFAULT_ATTACHMENT_PATH + randAttach).getPath());
+		String randAttach = PathService.getRandomEmailAttachmentPath();
+		attachment.setPath(randAttach);
+		attachment.setName(Paths.get(randAttach).getFileName().toString());
 		attachment.setDisposition(EmailAttachment.ATTACHMENT);
 		attachment.setDescription("Attachment");
-		attachment.setName(randAttach);
 
 		return attachment;
 	}

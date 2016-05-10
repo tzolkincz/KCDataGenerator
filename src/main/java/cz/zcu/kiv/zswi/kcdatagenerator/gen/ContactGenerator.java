@@ -22,7 +22,6 @@ public class ContactGenerator {
 	private final List<Contact> generatedContacts;
 	private boolean loadStateAfterSave = false;
 
-	public static final String DEFAULT_PHOTOS_PATH = "/photos/";
 	public static final int DEFAULT_PHOTOS_COUNT = 5;
 	private static final double CONTACT_PROPERTY_PROBABILITY = 0.5;
 
@@ -106,10 +105,7 @@ public class ContactGenerator {
 	}
 
 	private void setImage(Contact contact) throws Exception {
-		int avatarNo = (int) (Math.random() * DEFAULT_PHOTOS_COUNT);
-		contact.setContactPicture(getClass().getResource(
-				DEFAULT_PHOTOS_PATH + "avatar" + avatarNo + ".png")
-				.getFile());
+		contact.setContactPicture(PathService.getRandomAvatarPath());
 	}
 
 }

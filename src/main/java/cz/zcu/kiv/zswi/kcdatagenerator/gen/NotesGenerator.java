@@ -78,13 +78,7 @@ public class NotesGenerator {
 					stickyNote.setItemClass("IPM.StickyNote");
 					stickyNote.setSubject(getSubject());
 
-					//set color - wtf? UUID?
-					UUID guid = UUID.fromString(PROPERTY_DEFINITION_UUID);
-					ExtendedPropertyDefinition prop = new ExtendedPropertyDefinition(guid, 0x8B00,
-							MapiPropertyType.Integer);
-					stickyNote.setExtendedProperty(prop, (int) (Math.random() * STICKY_NOTES_COLOURS_COUNT));
-					//end set color
-
+					setRandomColor(stickyNote);
 					stickyNote.setMimeContent(new MimeContent("utf-8", "foo".getBytes()));
 
 					itemList.add(stickyNote);
@@ -155,5 +149,13 @@ public class NotesGenerator {
 
 	private MessageBody getMessageBody() {
 		return bodys.get((int) (Math.random() * bodys.size()));
+	}
+
+	private void setRandomColor(EmailMessage stickyNote) throws Exception {
+		//set color - wtf? UUID?
+		UUID guid = UUID.fromString(PROPERTY_DEFINITION_UUID);
+		ExtendedPropertyDefinition prop = new ExtendedPropertyDefinition(guid, 0x8B00,
+				MapiPropertyType.Integer);
+		stickyNote.setExtendedProperty(prop, (int) (Math.random() * STICKY_NOTES_COLOURS_COUNT));
 	}
 }

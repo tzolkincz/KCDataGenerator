@@ -1,10 +1,8 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +14,6 @@ public class NameGenerator {
 	int lastNameOffset = 0;
 	long skip = 0;
 
-	public static final String DEFAULT_DICT_PATH = "/dicts/";
-
 	/**
 	 *
 	 * @param firstNamesFile - can be null
@@ -26,18 +22,18 @@ public class NameGenerator {
 	 */
 	public NameGenerator(Path firstNamesFile, Path lastNamesFile) throws IOException {
 		if (firstNamesFile == null) {
-			loadFirstnames(Paths.get(getClass().getResource(DEFAULT_DICT_PATH + "firstnames").getPath()));
+			loadFirstnames(PathService.getDictFirstnamesPath());
 		} else {
 			loadFirstnames(firstNamesFile);
 		}
 
 		if (lastNamesFile == null) {
-			loadLastnames(Paths.get(getClass().getResource(DEFAULT_DICT_PATH + "lastnames").getPath()));
+			loadLastnames(PathService.getDictLastnamesPath());
 		} else {
 			loadLastnames(lastNamesFile);
 		}
 
-		if(firstNames.isEmpty()) {
+		if (firstNames.isEmpty()) {
 			throw new IllegalStateException("firstnames are empty");
 		}
 		if (lastNames.isEmpty()) {
@@ -84,6 +80,5 @@ public class NameGenerator {
 	public String getRandomLogin() {
 		return getLogin(getFirstName() + " " + getLastName());
 	}
-
 
 }

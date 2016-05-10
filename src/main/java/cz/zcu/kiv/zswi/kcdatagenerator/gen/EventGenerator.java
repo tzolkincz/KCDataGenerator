@@ -1,6 +1,5 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
-import static cz.zcu.kiv.zswi.kcdatagenerator.gen.EmailGenerator.DEFAULT_ATTACHMENT_PATH;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -101,11 +100,6 @@ public class EventGenerator {
 
 					if (isPrivate && random() < FLAG_PROBABILITY) {
 						appointment.setSensitivity(Sensitivity.Private);
-					}
-
-					if (attachement && random() < FLAG_PROBABILITY) {
-						String location = getClass().getResource(DEFAULT_ATTACHMENT_PATH + "img.png").getPath();
-						appointment.getAttachments().addFileAttachment(location);
 					}
 
 					appointment.save();

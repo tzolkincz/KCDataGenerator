@@ -42,7 +42,7 @@ public class EmailGenerator {
 
 	public static final double READED_PROBABILITY = 0.95;
 	public static final double EXTERNAL_SENDER_PROBABILITY = 0.15;
-	public static final double ATTACHMENT_PROBABILITY = 1.05;
+	public static final double ATTACHMENT_PROBABILITY = 0.15;
 	public static final double FLAGS_PROBABILITY = 0.05;
 	public static final double SHARED_FOLDER_PROBABILITY = 0.15;
 

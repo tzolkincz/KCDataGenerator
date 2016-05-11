@@ -4,6 +4,7 @@ import com.kerio.lib.json.api.connect.admin.iface.Domains;
 import com.kerio.lib.json.api.connect.admin.struct.Domain;
 import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;
 import java.util.List;
+import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 
 public class UseExample {
 
@@ -65,6 +66,25 @@ public class UseExample {
 
 		NotesGenerator ng = new NotesGenerator(ewsUrl, users, domainName);
 		ng.generateAndSave(5, true);
+
+		//serializace
+		String emlFile = "Date: Wed, 11 May 2016 09:54:36 +0200\n"
+				+ "Message-ID: <652427351.155.1462953276031.JavaMail.v@jlj>\n"
+				+ "Subject: Imported eml email\n"
+				+ "MIME-Version: 1.0\n"
+				+ "Importance: Normal\n"
+				+ "X-Priority: 3\n"
+				+ "Thread-Index: AZ2x3tU+NzM1OTc0YWZmODIxZTFkNw==\n"
+				+ "From: \"michalasvobodov23@localhost\" <michalasvobodov23@localhost>\n"
+				+ "To: \"michalaern17@localhost\" <michalaern17@localhost>\n"
+				+ "Content-Type: text/plain; charset=\"utf-8\"\n"
+				+ "Content-Transfer-Encoding: base64\n"
+				+ "\n"
+				+ "0LTQsNCy0L3Ri9C8LdC00LDQstC90L4uINCx0YvQuyDQtNC10LQg0JzRgNCw0LcuINCa0L7QvdC1\n"
+				+ "0YYuIChydSk=";
+
+		Serializer serializer = new Serializer();
+		serializer.sendEmlToServer(emlFile, users, ewsUrl, domainName, WellKnownFolderName.Inbox);
 	}
 
 }

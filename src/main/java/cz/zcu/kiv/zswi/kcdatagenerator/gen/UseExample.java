@@ -1,5 +1,6 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.gen;
 
+import cz.zcu.kiv.zswi.kcdatagenerator.imp.Serializer;
 import com.kerio.lib.json.api.connect.admin.iface.Domains;
 import com.kerio.lib.json.api.connect.admin.struct.Domain;
 import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;

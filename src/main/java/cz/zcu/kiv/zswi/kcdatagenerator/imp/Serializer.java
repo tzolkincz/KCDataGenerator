@@ -1,5 +1,7 @@
-package cz.zcu.kiv.zswi.kcdatagenerator.gen;
+package cz.zcu.kiv.zswi.kcdatagenerator.imp;
 
+import cz.zcu.kiv.zswi.kcdatagenerator.gen.ExchangeServiceFactory;
+import cz.zcu.kiv.zswi.kcdatagenerator.gen.GeneratedUser;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,9 +1,5 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
-import com.kerio.lib.json.api.connect.admin.iface.Domains;
-import com.kerio.lib.json.api.connect.admin.struct.Domain;
-import com.kerio.lib.json.api.connect.admin.struct.common.SearchQuery;
-
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.ApiClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -15,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
@@ -82,16 +77,11 @@ public class LoginController {
             alert.showAndWait();
         }
 
+        String domainName = url.getText();
+        int startIndex = domainName.lastIndexOf("/") + 1;
+        int endIndex = domainName.lastIndexOf(":");
         
-        Domain[] domains = client.getApi(Domains.class).get(new SearchQuery()).getList();
-
-        String domainId = "";
-        for (Domain domain : domains) {
-            System.out.println(" => " + domain.getName());
-            System.out.println(" => " + domain.getId());
-            domainId = domain.getId();
-        }
-        LoginDataSession.getInstance().setLoginData(new LoginData(client, domainId, username.getText(), password.getText()));
+        LoginDataSession.getInstance().setLoginData(new LoginData(client, domainName.substring(startIndex, endIndex), username.getText(), password.getText()));
         
         ((Stage)((Node)event.getTarget()).getScene().getWindow()).close();
 

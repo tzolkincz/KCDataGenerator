@@ -16,13 +16,6 @@
                     <MenuItem text="_Exit" fx:id="exit" onAction="#handleExitAction" />
                 </items>
             </Menu>
-            <Menu text="_Import" mnemonicParsing="true">
-                <items>
-                	<MenuItem text="_Import Emails" fx:id="importEmails" onAction="#handleImportEmails" />
-                	<SeparatorMenuItem  />
-                	<MenuItem text="_Import XML" fx:id="importXML" onAction="#handleImportXML" />
-                </items>
-            </Menu>
         </MenuBar>
     </top>
     <center>

@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -16,6 +17,7 @@ import javax.xml.stream.XMLStreamException;
 
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.ExchangeServiceFactory;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.GeneratedUser;
+import cz.zcu.kiv.zswi.kcdatagenerator.imp.EmlImporter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -27,6 +29,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import microsoft.exchange.webservices.data.core.EwsServiceXmlWriter;
@@ -406,4 +409,19 @@ public class GeneratedUsersController implements Initializable {
             }
         }
     }
+    
+    /**
+	 * Action will import emails(.eml files) from chosen directory on server.
+	 */
+	@FXML
+	public void handleImportEmails() {
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle("Open File");
+
+		File selectedDirectory = chooser.showDialog(new Stage());
+		ArrayList<File> files = new ArrayList<File>(Arrays.asList(selectedDirectory.listFiles()));
+
+		 EmlImporter importer = new EmlImporter(files);
+		 importer.importEml(generatedUsers, ewsUrl, loginData.domainName);
+	}
 }

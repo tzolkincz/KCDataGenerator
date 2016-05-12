@@ -1,14 +1,11 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -26,8 +23,6 @@ import cz.zcu.kiv.zswi.kcdatagenerator.gen.NameGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.NotesGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.TaskGenerator;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.UsersGenerator;
-import cz.zcu.kiv.zswi.kcdatagenerator.imp.EmlImporter;
-import cz.zcu.kiv.zswi.kcdatagenerator.imp.XmlImporter;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -49,11 +44,8 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import microsoft.exchange.webservices.data.core.EwsServiceXmlWriter;
-import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.service.item.Appointment;
 import microsoft.exchange.webservices.data.core.service.item.Contact;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
@@ -358,6 +350,8 @@ public class WindowController implements Initializable {
 	@FXML
 	private void handleQuickGenerationAction(ActionEvent event) {
 
+		Domain[] domains = LoginDataSession.getInstance().getLoginData().client.getApi(Domains.class).get(new SearchQuery()).getList();
+		
 		//Fill all fields and boxes with random and default values
 		userCountData.setText(DEFAULT_VALUE);
 		emailCountData.setText(DEFAULT_VALUE);
@@ -379,6 +373,7 @@ public class WindowController implements Initializable {
 		contactsNationalChars.setSelected(false);
 		notesCountData.setText(DEFAULT_VALUE);
 		notesNationalChars.setSelected(true);
+		domainBox.setValue(domains[ZERO_CONSTANT].getName());
 
 		try {
 			generate();
@@ -451,47 +446,6 @@ public class WindowController implements Initializable {
 	}
 
 	/**
-	 * Action will import emails(.eml files) from chosen directory on server.
-	 */
-	@FXML
-	public void handleImportEmails() {
-		DirectoryChooser chooser = new DirectoryChooser();
-		chooser.setTitle("Open File");
-
-		File selectedDirectory = chooser.showDialog(new Stage());
-		ArrayList<File> files = new ArrayList<File>(Arrays.asList(selectedDirectory.listFiles()));
-
-		 EmlImporter importer = new EmlImporter(files);
-		 importer.importEml();
-	}
-	
-	/**
-	 * Action will import xml files with saved contacts, emails, notes, events, tasks from chosen file on server.
-	 */
-	@FXML
-	public void handleImportXML() {
-		FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
-        fileChooser.getExtensionFilters().add(extFilter);
-        
-        File file = fileChooser.showSaveDialog(new Stage());
-        
-        InputStream is = null;
-		try {
-			is = new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-        
-        try {
-			XmlImporter importer = new XmlImporter(is);
-			importer.importXml();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Triggers alter for bad numbers.
 	 */
 	private void showNumberError() {
@@ -524,16 +478,27 @@ public class WindowController implements Initializable {
 
 		checkInput();
 
-		String domainName = "localhost";
-		String ewsUrl = "http://localhost:8800/Ews/Exchange.asmx";
 		LoginData loginData = LoginDataSession.getInstance().getLoginData();
+		String domainName = domainBox.getValue();
+		String ewsUrl = "http://" + loginData.domainName + ":8800/Ews/Exchange.asmx";
 
+		Domain[] domains = loginData.client.getApi(Domains.class).get(new SearchQuery()).getList();
+
+		String domainId = "";
+		for (Domain domain : domains) {
+			if(domain.getName().contains(domainName)) {
+				domainId = domain.getId();
+			}
+		}
+		
+		System.out.println("domain: " + domainId);
+		
 		userCount = Integer.parseInt(userCountData.getText());
 		emailCount = Integer.parseInt(emailCountData.getText());
 
 		NameGenerator nameGenerator = new NameGenerator((firstnamesFile == null) ? null : firstnamesFile.toPath(),
 				(lastnamesFile == null) ? null : lastnamesFile.toPath());
-		final UsersGenerator usersGenerator = new UsersGenerator(loginData.client, loginData.domainId, nameGenerator);
+		final UsersGenerator usersGenerator = new UsersGenerator(loginData.client, domainId, nameGenerator);
 
 		final List<GeneratedUser> generatedUsers = usersGenerator.getUsers();
 
@@ -557,15 +522,11 @@ public class WindowController implements Initializable {
 					System.out.println(e);
 				}
 
-				
 				List<GeneratedUser> users = usersGenerator.getUsers();
 				for (GeneratedUser gu : users) {
 					System.out.println(gu.getFirstName() + " " + gu.getLastName() + " " + " " + gu.getUsername() + ":"
 							+ gu.getPassword());
 				}
-
-				String domainName = domainBox.getValue();
-				String ewsUrl = "http://localhost:8800/Ews/Exchange.asmx";
 
 				emails = emailGenerator.generateAndSave(emailCount, emailFoldersSlider.getValue(), flag.isSelected(),
 						randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
@@ -588,7 +549,7 @@ public class WindowController implements Initializable {
 				notes = noteGenerator.generateAndSave(noteCount, notesNationalChars.isSelected());
 				updateProgress(emailCount + contactCount + eventCount + taskCount + noteCount,
 						userCount + emailCount + contactCount + noteCount + taskCount);
-
+				
 				return null;
 			}
 

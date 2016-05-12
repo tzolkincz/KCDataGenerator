@@ -20,6 +20,11 @@
                     <MenuItem text="_Tasks - XML" fx:id="export" onAction="#handleExportTasksAction" />
                 </items>
             </Menu>
+            <Menu text="_Import" mnemonicParsing="true">
+                <items>
+                	<MenuItem text="_Import Emails" fx:id="importEmails" onAction="#handleImportEmails" />
+                </items>
+            </Menu>
         </MenuBar>
     </top>
     <center>

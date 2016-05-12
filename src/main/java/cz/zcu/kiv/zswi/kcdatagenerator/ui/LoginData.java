@@ -17,7 +17,7 @@ public class LoginData {
     /**
      * Id of domain.
      */
-    public String domainId;
+    public String domainName;
     
     /**
      * Username of logged user.
@@ -32,13 +32,13 @@ public class LoginData {
     /**
      * Constructor.
      * @param client Api client
-     * @param domainId domain ID
+     * @param domainName domain name
      * @param username username of logged user
      * @param password password of logged user
      */
-    public LoginData(ApiClient client, String domainId, String username, String password) {
+    public LoginData(ApiClient client, String domainName, String username, String password) {
         this.client = client;
-        this.domainId = domainId;
+        this.domainName = domainName;
         this.username = username;
         this.password = password;
     }

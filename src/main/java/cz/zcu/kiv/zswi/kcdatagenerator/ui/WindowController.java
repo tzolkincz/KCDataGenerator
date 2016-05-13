@@ -84,13 +84,13 @@ public class WindowController implements Initializable {
 	public TextField userCountData;
 
 	/**
-	 * Label for firstnames file choose button. 
+	 * Label for firstnames file choose button.
 	 */
 	@FXML
 	private Label firstNamesLabel;
 
 	/**
-	 * Label for lastnames file choose button. 
+	 * Label for lastnames file choose button.
 	 */
 	@FXML
 	private Label lastNamesLabel;
@@ -246,7 +246,7 @@ public class WindowController implements Initializable {
 	 * Constant.
 	 */
 	private static final int ZERO_CONSTANT = 0;
-	
+
 	/**
 	 * Constant.
 	 */
@@ -256,42 +256,42 @@ public class WindowController implements Initializable {
 	 * Constant.
 	 */
 	private static final double DEFAULT_FOLDERS_VALUE = 38.5;
-	
+
 	/**
 	 * Number of users to generate.
 	 */
 	private static int userCount;
-	
+
 	/**
 	 * Number of emails to generate.
 	 */
 	private static int emailCount;
-	
+
 	/**
 	 * Number of contacts to generate.
 	 */
 	private static int contactCount;
-	
+
 	/**
 	 * Number of events to generate.
 	 */
 	private static int eventCount;
-	
+
 	/**
 	 * Number of tasks to generate.
 	 */
 	private static int taskCount;
-	
+
 	/**
 	 * Number of notes to generate.
 	 */
 	private static int noteCount;
-	
+
 	/**
 	 * External dictionary with firstnames.
 	 */
 	private File firstnamesFile;
-	
+
 	/**
 	 * External dictionary with lastnames.
 	 */
@@ -301,27 +301,27 @@ public class WindowController implements Initializable {
 	 * List of generated contacts.
 	 */
 	private List<Contact> contacts = new ArrayList<>();
-	
+
 	/**
 	 * List of generated events.
 	 */
 	private List<Appointment> events = new ArrayList<>();
-	
+
 	/**
 	 * List of generated emails.
 	 */
 	private List<EmailMessage> emails = new ArrayList<>();
-	
+
 	/**
 	 * List of generated notes.
 	 */
 	private List<EmailMessage> notes = new ArrayList<>();
-	
+
 	/**
 	 * List of generated tasks.
 	 */
 	private List<microsoft.exchange.webservices.data.core.service.item.Task> tasks = new ArrayList<>();
-	
+
 	/**
 	 * Manager for saving and loading properties.
 	 */
@@ -351,7 +351,7 @@ public class WindowController implements Initializable {
 	private void handleQuickGenerationAction(ActionEvent event) {
 
 		Domain[] domains = LoginDataSession.getInstance().getLoginData().client.getApi(Domains.class).get(new SearchQuery()).getList();
-		
+
 		//Fill all fields and boxes with random and default values
 		userCountData.setText(DEFAULT_VALUE);
 		emailCountData.setText(DEFAULT_VALUE);
@@ -490,9 +490,9 @@ public class WindowController implements Initializable {
 				domainId = domain.getId();
 			}
 		}
-		
+
 		System.out.println("domain: " + domainId);
-		
+
 		userCount = Integer.parseInt(userCountData.getText());
 		emailCount = Integer.parseInt(emailCountData.getText());
 
@@ -513,11 +513,15 @@ public class WindowController implements Initializable {
 
 			@Override
 			public Void call() throws URISyntaxException, FileNotFoundException, XMLStreamException, Exception {
+				int allCount = userCount + emailCount + contactCount + noteCount + taskCount;
+				int currentCount = 0;
 
-				usersGenerator.generate(userCount);
-				updateProgress(userCount, userCount + emailCount + contactCount + noteCount + taskCount);
+				if (userCount > 0) {
+					usersGenerator.generate(userCount);
+					currentCount += userCount;
+					updateProgress(currentCount, allCount);
+				}
 
-				
 				for (com.kerio.lib.json.api.connect.admin.struct.common.Error e : usersGenerator.save()) {
 					System.out.println(e);
 				}
@@ -528,28 +532,38 @@ public class WindowController implements Initializable {
 							+ gu.getPassword());
 				}
 
-				emails = emailGenerator.generateAndSave(emailCount, emailFoldersSlider.getValue(), flag.isSelected(),
-						randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
-				updateProgress(userCount + emailCount, userCount + emailCount + contactCount + noteCount + taskCount);
+				if (emailCount > 0) {
+					emails = emailGenerator.generateAndSave(emailCount, emailFoldersSlider.getValue(), flag.isSelected(),
+							randomEncoding.isSelected(), attachment.isSelected(), externalSender.isSelected());
+					currentCount += emailCount;
+					updateProgress(currentCount, allCount);
+				}
 
-				contacts = contactGenerator.generateAndSave(contactCount);
-				updateProgress(emailCount + contactCount,
-						userCount + emailCount + contactCount + noteCount + taskCount);
+				if (contactCount > 0) {
+					contacts = contactGenerator.generateAndSave(contactCount);
+					currentCount += contactCount;
+					updateProgress(currentCount, allCount);
+				}
 
-				events = eventGenerator.generateAndSave(eventCount, fullDay.isSelected(), multipleDays.isSelected(),
-						repeatable.isSelected(), privates.isSelected(), eventAttachment.isSelected(),
-						invite.isSelected(), contactsNationalChars.isSelected());
-				updateProgress(emailCount + contactCount + eventCount,
-						userCount + emailCount + contactCount + noteCount + taskCount);
+				if (eventCount > 0) {
+					events = eventGenerator.generateAndSave(eventCount, fullDay.isSelected(), multipleDays.isSelected(),
+							repeatable.isSelected(), privates.isSelected(), eventAttachment.isSelected(),
+							invite.isSelected(), contactsNationalChars.isSelected());
+					currentCount += eventCount;
+					updateProgress(currentCount, allCount);
+				}
 
-				tasks = taskGenerator.generateAndSave(taskCount, tasksNationalChars.isSelected());
-				updateProgress(emailCount + contactCount + eventCount + taskCount,
-						userCount + emailCount + contactCount + noteCount + taskCount);
+				if (taskCount > 0) {
+					tasks = taskGenerator.generateAndSave(taskCount, tasksNationalChars.isSelected());
+					currentCount += taskCount;
+					updateProgress(currentCount, allCount);
+				}
 
-				notes = noteGenerator.generateAndSave(noteCount, notesNationalChars.isSelected());
-				updateProgress(emailCount + contactCount + eventCount + taskCount + noteCount,
-						userCount + emailCount + contactCount + noteCount + taskCount);
-				
+				if (noteCount > 0) {
+					notes = noteGenerator.generateAndSave(noteCount, notesNationalChars.isSelected());
+					currentCount += noteCount;
+					updateProgress(currentCount, allCount);
+				}
 				return null;
 			}
 

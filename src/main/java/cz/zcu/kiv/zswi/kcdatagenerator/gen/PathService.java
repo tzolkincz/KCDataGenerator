@@ -17,8 +17,13 @@ import java.util.Optional;
 
 public class PathService {
 
-	final static Path BASE_PATH = Paths.get(PathService.class.
-			getProtectionDomain().getCodeSource().getLocation().getPath());
+	final static Path BASE_PATH;
+
+	static {
+		String filePath = PathService.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		BASE_PATH = Paths.get(System.getProperty("os.name").contains("indow")
+				? filePath.substring(1) : filePath);
+	}
 
 	final static Path INC_PATH = Paths.get(BASE_PATH.getParent().toString(), "inc");
 

@@ -218,7 +218,7 @@ public class EmailGenerator {
 		return "This is a test mail ... :-)";
 	}
 
-	private EmailAttachment createAttachment() throws MalformedURLException {
+	private EmailAttachment createAttachment() throws IOException {
 		EmailAttachment attachment = new EmailAttachment();
 
 		String randAttach = PathService.getRandomEmailAttachmentPath();

@@ -81,7 +81,7 @@
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
 					  <manifest>
-						<mainClass>cz.zcu.kiv.zswi.kcdatagenerator.ui.Window</mainClass>
+						<mainClass>cz.zcu.kiv.zswi.kcdatagenerator.ui.Main</mainClass>
 					  </manifest>
 					</archive>
 

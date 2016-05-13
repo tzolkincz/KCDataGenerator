@@ -105,7 +105,7 @@ public class ContactGenerator {
 	}
 
 	private void setImage(Contact contact) throws Exception {
-		contact.setContactPicture(PathService.getRandomAvatarPath());
+		contact.setContactPicture(PathService.getRandomAvatarFileStream());
 	}
 
 }

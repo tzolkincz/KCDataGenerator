@@ -1,0 +1,137 @@
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<!-- creating root of the scene -->
+<BorderPane fx:id="windowRootPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.zswi.kcdatagenerator.ui.WindowController">
+    <top>
+        <MenuBar>
+            <Menu text="_Action" mnemonicParsing="true">
+                <items>
+                	<MenuItem text="_Save properties" fx:id="save" onAction="#handleSavePropertiesAction" />
+                    <MenuItem text="_Load properties" fx:id="load" onAction="#handleLoadPropertiesAction" />
+                    <MenuItem text="_Exit" fx:id="exit" onAction="#handleExitAction" />
+                </items>
+            </Menu>
+        </MenuBar>
+    </top>
+    <center>
+    	<GridPane xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+	        <GridPane xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+	            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+	            <GridPane fx:id="usersTable" xmlns:fx="http://javafx.com/fxml" alignment="top_right" hgap="10" vgap="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+	                <Label style="-fx-font: NORMAL 20 Arial;" text="Users" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+	
+	                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+	                <TextField fx:id="userCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+	
+	                <Button text="First names" onAction="#handleChooseFirstNameFileAction" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+	                <Label fx:id="firstNamesLabel" text="Not chosen" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+	                <Button text="Last names" onAction="#handleChooseLastNameFileAction" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+	                <Label fx:id="lastNamesLabel" text="Not chosen" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+	            </GridPane>
+	            <GridPane fx:id="domainsTable" xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10" GridPane.columnIndex="0" GridPane.rowIndex="1">
+	                <Label style="-fx-font: NORMAL 20 Arial;" text="Domains"
+	                    GridPane.columnIndex="0" GridPane.rowIndex="0">
+	                </Label>
+	                <ChoiceBox fx:id="domainBox" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+	                <Label style="-fx-font: NORMAL 10 Arial;" text="(All entities are generated per user)"       
+	                    GridPane.columnIndex="0" GridPane.rowIndex="2">
+	                </Label>
+	            </GridPane>
+	        </GridPane>
+	        <GridPane fx:id="tabsContainer" xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10" GridPane.columnIndex="0" GridPane.rowIndex="2">
+	            	<TabPane fx:id="tabs">
+					    <tabs>
+					        <Tab text="Emails">
+					            <content>
+					               <GridPane fx:id="emailsTable" xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10">
+					               	<padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+						                <Label style="-fx-font: NORMAL 20 Arial;" text="Emails"
+						                    GridPane.columnIndex="0" GridPane.rowIndex="0">
+						                </Label>
+						
+						                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+						                <TextField fx:id="emailCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+						
+						                <CheckBox fx:id="attachment" text="Attachment" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+						                <CheckBox fx:id="randomEncoding" text="Random encoding" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+						                <CheckBox fx:id="flag" text="Random flags" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+						                <CheckBox fx:id="externalSender" text="External sender in header" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+						
+						                <Label fx:id="emailFoldersSliderLabel" text="Folders: 0%" style="; -fx-label-padding: 10 0 0 0;" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+						                <Slider fx:id="emailFoldersSlider" orientation="HORIZONTAL" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+						            </GridPane>
+					            </content>
+					        </Tab>
+					        <Tab text="Events">
+					            <content>
+					                <GridPane fx:id="eventsTable" xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10">
+					                	<padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+						                <Label style="-fx-font: NORMAL 20 Arial;" text="Events"
+						                    GridPane.columnIndex="0" GridPane.rowIndex="0">
+						                </Label>
+						
+						                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+						                <TextField fx:id="eventsCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+						
+						                <CheckBox fx:id="fullDay" text="Whole day" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+						                <CheckBox fx:id="multipleDays" text="Multiple days" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+						                <CheckBox fx:id="repeatable" text="Repeatable" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+						                <CheckBox fx:id="privates" text="Private" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+						                <CheckBox fx:id="eventAttachment" text="Attachment" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+						                <CheckBox fx:id="invite" text="Invite" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+						            </GridPane>
+					            </content>
+					        </Tab>
+					        <Tab text="Others">
+					            <content>
+						            <GridPane fx:id="contactsTable" xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10">
+						            	<padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+						                <Label style="-fx-font: NORMAL 20 Arial;" text="Contacts"
+						                    GridPane.columnIndex="0" GridPane.rowIndex="0">
+						                </Label>
+						
+						                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+						                <TextField fx:id="contactsCountData" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+						                
+						                <CheckBox fx:id="contactsNationalChars" text="National characters" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+	
+						                <Label style="-fx-font: NORMAL 20 Arial;" text="Notes"
+						                    GridPane.columnIndex="0" GridPane.rowIndex="3">
+						                </Label>
+						
+						                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+						                <TextField fx:id="notesCountData" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+						                
+						                <CheckBox fx:id="notesNationalChars" text="National characters" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+	
+						                <Label style="-fx-font: NORMAL 20 Arial;" text="Tasks"
+						                    GridPane.columnIndex="0" GridPane.rowIndex="6">
+						                </Label>
+						
+						                <Label text="Count:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+						                <TextField fx:id="tasksCountData" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+						                
+						                <CheckBox fx:id="tasksNationalChars" text="National characters" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+						            </GridPane>
+					            </content>
+					        </Tab>
+					    </tabs>
+					</TabPane>
+	            </GridPane>
+		</GridPane>
+    </center>
+    <bottom>
+        <Separator fx:id="separator"/>
+        <VBox spacing="10" alignment="center">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <ProgressBar fx:id="progressBar" prefHeight="25.0" />
+            <Button text="Generate" onAction="#handleUserGenerationAction"/>
+            <Button text="Quick generate" onAction="#handleQuickGenerationAction"/>
+        </VBox>
+    </bottom>
+</BorderPane>

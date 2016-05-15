@@ -11,15 +11,6 @@
 <BorderPane fx:id="usersTable" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.zswi.kcdatagenerator.ui.GeneratedUsersController">
     <top>
         <MenuBar>
-            <Menu text="_Export" mnemonicParsing="true">
-                <items>
-                    <MenuItem text="_Emails - XML" fx:id="export" onAction="#handleExportEmailAction" />
-                    <MenuItem text="_Contacts - XML" fx:id="export" onAction="#handleExportContactsAction" />
-                    <MenuItem text="E_vents - XML" fx:id="export" onAction="#handleExportEventsAction" />
-                    <MenuItem text="_Notes - XML" fx:id="export" onAction="#handleExportNotesAction" />
-                    <MenuItem text="_Tasks - XML" fx:id="export" onAction="#handleExportTasksAction" />
-                </items>
-            </Menu>
             <Menu text="_Import" mnemonicParsing="true">
                 <items>
                 	<MenuItem text="_Import Emails" fx:id="importEmails" onAction="#handleImportEmails" />

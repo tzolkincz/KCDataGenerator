@@ -435,9 +435,9 @@ public class WindowController implements Initializable {
 	 */
 	private void showNumberError() {
 		Alert alert = new Alert(AlertType.WARNING);
-		alert.setTitle("Chyba - generování uživatelů");
-		alert.setHeaderText("Formát čísla");
-		alert.setContentText("Musíte zadat celé nezáporné číslo");
+		alert.setTitle("Error - user generation");
+		alert.setHeaderText("Number format");
+		alert.setContentText("You have to fill not negative and not decimal number.");
 		alert.showAndWait();
 	}
 
@@ -448,9 +448,9 @@ public class WindowController implements Initializable {
 	 */
 	private void showNumberError(int min, int max) {
 		Alert alert = new Alert(AlertType.WARNING);
-		alert.setTitle("Chyba - generování uživatelů");
-		alert.setHeaderText("Formát čísla");
-		alert.setContentText("Musíte zadat celé nezáporné číslo v rozsahu " + min + "-" + max);
+		alert.setTitle("Error - user generation");
+		alert.setHeaderText("Number format");
+		alert.setContentText("You have to fill not negative and not decimal number in range " + min + "-" + max + ".");
 		alert.showAndWait();
 	}
 

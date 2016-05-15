@@ -2,14 +2,14 @@ package cz.zcu.kiv.zswi.kcdatagenerator.imp;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.GeneratedUser;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 
 /**
@@ -23,13 +23,13 @@ public class EmlImporter {
 	 * List of email files.
 	 */
 	private ArrayList<File> emailsFiles;
-	
+
 	/**
 	 * Serializer for import of .eml files
 	 */
 	private Serializer serializer;
-	
-	
+
+
 	/**
 	 * Constructor
 	 * @param files .eml files with emails
@@ -51,16 +51,9 @@ public class EmlImporter {
 		for(File file: emailsFiles) {
 			try
 	        {
-			 	is = new FileInputStream(file);
-
-			 	StringBuilder sb = new StringBuilder();
-			 	br = new BufferedReader(new InputStreamReader(is));
-			 	String read;
-
-			 	while((read=br.readLine()) != null) {
-			 	    sb.append(read);   
-			 	}
-			 	serializer.sendEmlToServer(sb.toString(), generatedUsers, ewsUrl, domainName, WellKnownFolderName.Inbox);
+				String emlFileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+			 	serializer.sendEmlToServer(emlFileContent, generatedUsers, ewsUrl,
+						domainName, WellKnownFolderName.Inbox);
 	        }
 	        catch (Exception e)
 	        {

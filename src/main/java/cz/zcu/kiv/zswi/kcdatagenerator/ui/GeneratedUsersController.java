@@ -121,6 +121,11 @@ public class GeneratedUsersController implements Initializable {
      * Container for login data of logged in user.
      */
     private LoginData loginData;
+    
+    /**
+     * Name of domain chosen in form.
+     */
+    private String domainName;
 
     /**
      * Triggers when new instance of class is made.
@@ -155,9 +160,10 @@ public class GeneratedUsersController implements Initializable {
      * @param tasks generated tasks
      * @param ewsUrl url of exchange service
      * @param loginData login data of user
+     * 2param domainName domain chosen in form
      */
     public void setData(List<GeneratedUser> generatedData, List<EmailMessage> emailMessages, List<Contact> contacts, List<Appointment> events, List<EmailMessage> notes, List<Task> tasks, String ewsUrl,
-            LoginData loginData) {
+            LoginData loginData, String domainName) {
         generatedUsers.addAll(generatedData);
         this.ewsUrl = ewsUrl;
         this.loginData = loginData;
@@ -166,6 +172,7 @@ public class GeneratedUsersController implements Initializable {
         this.events = events;
         this.notes = notes;
         this.tasks = tasks;
+        this.domainName = domainName;
     }
     
     /**
@@ -422,6 +429,6 @@ public class GeneratedUsersController implements Initializable {
 		ArrayList<File> files = new ArrayList<File>(Arrays.asList(selectedDirectory.listFiles()));
 
 		 EmlImporter importer = new EmlImporter(files);
-		 importer.importEml(generatedUsers, ewsUrl, loginData.domainName);
+		 importer.importEml(generatedUsers, ewsUrl, this.domainName);
 	}
 }

@@ -148,10 +148,10 @@ public class WindowController implements Initializable {
 	public TextField tasksCountData;
 
 	/**
-	 * Checkbox for national characters in tasks.
+	 * Checkbox for national characters in Others tab.
 	 */
 	@FXML
-	public CheckBox tasksNationalChars;
+	public CheckBox nationalChars;
 
 	/********** EVENTS *********/
 
@@ -205,12 +205,6 @@ public class WindowController implements Initializable {
 	@FXML
 	public TextField contactsCountData;
 
-	/**
-	 * Checkbox for whether contacts will contain national characters.
-	 */
-	@FXML
-	public CheckBox contactsNationalChars;
-
 	/*********** NOTES *********/
 
 	/**
@@ -218,12 +212,6 @@ public class WindowController implements Initializable {
 	 */
 	@FXML
 	public TextField notesCountData;
-
-	/**
-	 * Checkbox for whether notes will contain national characters.
-	 */
-	@FXML
-	public CheckBox notesNationalChars;
 
 
 	/*********** TABS **********/
@@ -361,7 +349,7 @@ public class WindowController implements Initializable {
 		externalSender.setSelected(true);
 		emailFoldersSlider.setValue(DEFAULT_FOLDERS_VALUE);
 		tasksCountData.setText(DEFAULT_VALUE);
-		tasksNationalChars.setSelected(false);
+		nationalChars.setSelected(false);
 		eventsCountData.setText(DEFAULT_VALUE);
 		fullDay.setSelected(true);
 		multipleDays.setSelected(true);
@@ -370,9 +358,7 @@ public class WindowController implements Initializable {
 		eventAttachment.setSelected(true);
 		invite.setSelected(false);
 		contactsCountData.setText(DEFAULT_VALUE);
-		contactsNationalChars.setSelected(false);
 		notesCountData.setText(DEFAULT_VALUE);
-		notesNationalChars.setSelected(true);
 		domainBox.setValue(domains[ZERO_CONSTANT].getName());
 
 		try {
@@ -430,7 +416,6 @@ public class WindowController implements Initializable {
 		if (propertiesManager == null) {
 			propertiesManager = new PropertiesManager(this);
 		}
-		System.out.println(tasksNationalChars.isSelected());
 		propertiesManager.saveProperties();
 	}
 
@@ -548,19 +533,19 @@ public class WindowController implements Initializable {
 				if (eventCount > 0) {
 					events = eventGenerator.generateAndSave(eventCount, fullDay.isSelected(), multipleDays.isSelected(),
 							repeatable.isSelected(), privates.isSelected(), eventAttachment.isSelected(),
-							invite.isSelected(), contactsNationalChars.isSelected());
+							invite.isSelected(), nationalChars.isSelected());
 					currentCount += eventCount;
 					updateProgress(currentCount, allCount);
 				}
 
 				if (taskCount > 0) {
-					tasks = taskGenerator.generateAndSave(taskCount, tasksNationalChars.isSelected());
+					tasks = taskGenerator.generateAndSave(taskCount, nationalChars.isSelected());
 					currentCount += taskCount;
 					updateProgress(currentCount, allCount);
 				}
 
 				if (noteCount > 0) {
-					notes = noteGenerator.generateAndSave(noteCount, notesNationalChars.isSelected());
+					notes = noteGenerator.generateAndSave(noteCount, nationalChars.isSelected());
 					currentCount += noteCount;
 					updateProgress(currentCount, allCount);
 				}
@@ -576,7 +561,7 @@ public class WindowController implements Initializable {
 							.<GeneratedUsersController> getController();
 
 					generatedUsersController.setData(generatedUsers, emails, contacts, events, notes, tasks, ewsUrl,
-							loginData);
+							loginData, domainBox.getValue());
 
 					Stage stage = new Stage();
 					stage.setTitle("Generated users");

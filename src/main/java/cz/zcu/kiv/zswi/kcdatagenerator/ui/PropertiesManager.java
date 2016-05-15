@@ -71,10 +71,10 @@ public class PropertiesManager {
 			
 			prop.setProperty("contactsCountData", windowController.contactsCountData.getText());
 
-			if (windowController.contactsNationalChars.isSelected()) {
-				prop.setProperty("contactsNationalChars", "true");
+			if (windowController.nationalChars.isSelected()) {
+				prop.setProperty("nationalChars", "true");
 			} else {
-				prop.setProperty("contactsNationalChars", "false");
+				prop.setProperty("nationalChars", "false");
 			}
 
 			if(windowController.domainBox.getValue() == null) {
@@ -126,12 +126,6 @@ public class PropertiesManager {
 
 			prop.setProperty("notesCountData", windowController.notesCountData.getText());
 
-			if (windowController.notesNationalChars.isSelected()) {
-				prop.setProperty("notesNationalChars", "true");
-			} else {
-				prop.setProperty("notesNationalChars", "false");
-			}
-
 			if (windowController.privates.isSelected()) {
 				prop.setProperty("privates", "true");
 			} else {
@@ -151,13 +145,7 @@ public class PropertiesManager {
 			}
 
 			prop.setProperty("tasksCountData", windowController.tasksCountData.getText());
-
-			 if (windowController.tasksNationalChars.isSelected()) {
-			 prop.setProperty("tasksNationalChars", "true");
-			 } else {
-			 prop.setProperty("tasksNationalChars", "false");
-			 }
-
+			
 			prop.setProperty("userCountData", windowController.userCountData.getText());
 
 			// save properties to project root folder
@@ -217,9 +205,9 @@ public class PropertiesManager {
 			windowController.contactsCountData.setText(prop.getProperty("contactsCountData"));
 
 			if(prop.getProperty("contactsNationalChars").equals("true")) {
-				windowController.contactsNationalChars.setSelected(true);
+				windowController.nationalChars.setSelected(true);
 			} else {
-				windowController.contactsNationalChars.setSelected(false);
+				windowController.nationalChars.setSelected(false);
 			}
 	
 			windowController.domainBox.setValue(prop.getProperty("domainBox"));
@@ -266,12 +254,6 @@ public class PropertiesManager {
 
 			windowController.notesCountData.setText(prop.getProperty("notesCountData"));
 
-			if (prop.getProperty("notesNationalChars").equals("true")) {
-				windowController.notesNationalChars.setSelected(true);
-			} else {
-				windowController.notesNationalChars.setSelected(false);
-			}
-
 			if (prop.getProperty("privates").equals("true")) {
 				windowController.privates.setSelected(true);
 			} else {
@@ -291,12 +273,6 @@ public class PropertiesManager {
 			}
 
 			windowController.tasksCountData.setText(prop.getProperty("tasksCountData"));
-
-			 if (prop.getProperty("tasksNationalChars").equals("true")) {
-			 windowController.tasksNationalChars.setSelected(true);
-			 } else {
-			 windowController.tasksNationalChars.setSelected(false);
-			 }
 
 			windowController.userCountData.setText(prop.getProperty("userCountData"));
 

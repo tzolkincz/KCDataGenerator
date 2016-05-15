@@ -105,7 +105,7 @@ public class PathService {
 
 	static Path getDictFirstnamesPath() throws IOException {
 		initTemp();
-		return getDictPath(lastnamesFile, "firstnames.txt");
+		return getDictPath(firstnamesFile, "firstnames.txt");
 	}
 
 	static Path getDictLastnamesPath() throws IOException {
@@ -114,7 +114,7 @@ public class PathService {
 	}
 
 	private static Path getDictPath(File tempFile, String dictName) throws IOException {
-		File file = new File(INC_PATH.toString(), DEFAULT_DICT_PATH + dictName);
+		File file = new File(INC_PATH.toString() + DEFAULT_DICT_PATH + dictName);
 		if (file.exists()) {
 			return Paths.get(file.getAbsolutePath());
 		}

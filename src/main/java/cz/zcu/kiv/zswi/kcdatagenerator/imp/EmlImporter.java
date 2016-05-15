@@ -46,31 +46,14 @@ public class EmlImporter {
 	 * @param domainName name of domain
 	 */
 	public void importEml(List<GeneratedUser> generatedUsers, String ewsUrl, String domainName) {
-		InputStream is = null;
-		BufferedReader br = null;
-		for(File file: emailsFiles) {
-			try
-	        {
+		for (File file : emailsFiles) {
+			try {
 				String emlFileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-			 	serializer.sendEmlToServer(emlFileContent, generatedUsers, ewsUrl,
+				serializer.sendEmlToServer(emlFileContent, generatedUsers, ewsUrl,
 						domainName, WellKnownFolderName.Inbox);
-	        }
-	        catch (Exception e)
-	        {
-	            e.printStackTrace();
-	        }
-		}
-		try {
-			br.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			is.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

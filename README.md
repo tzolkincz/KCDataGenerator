@@ -10,7 +10,7 @@ Download lastest release and then issue the command `java -jar KerioConnectDataG
 ```mvn package```
 
 ## Dependencies
-Some of dependencies (Kerio admin) are not in central maven repositories.
+Some of dependencies (e.g. Kerio admin) are not in central maven repositories. Kerio java admin lib is not available yet (05/16). Please see [http://www.kerio.com/learn-community/developer-zone/details#downloads] for updates.
 
 
 ## Licence

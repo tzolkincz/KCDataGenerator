@@ -22,7 +22,7 @@
 		        GridPane.columnIndex="0" GridPane.rowIndex="0">
 		    </Label>
 		 
-               <Label text="URL:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+               <Label text="Server:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
              	<TextField fx:id="url" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
 				<Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>            

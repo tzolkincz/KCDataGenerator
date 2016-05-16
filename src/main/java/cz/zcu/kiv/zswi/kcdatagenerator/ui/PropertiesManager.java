@@ -204,7 +204,7 @@ public class PropertiesManager {
 			
 			windowController.contactsCountData.setText(prop.getProperty("contactsCountData"));
 
-			if(prop.getProperty("contactsNationalChars").equals("true")) {
+			if(prop.getProperty("nationalChars").equals("true")) {
 				windowController.nationalChars.setSelected(true);
 			} else {
 				windowController.nationalChars.setSelected(false);

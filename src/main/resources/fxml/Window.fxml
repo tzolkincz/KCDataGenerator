@@ -130,7 +130,6 @@
             <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
             <ProgressBar fx:id="progressBar" prefHeight="25.0" />
             <Button text="Generate" onAction="#handleUserGenerationAction"/>
-            <Button text="Quick generate" onAction="#handleQuickGenerationAction"/>
         </VBox>
     </bottom>
 </BorderPane>

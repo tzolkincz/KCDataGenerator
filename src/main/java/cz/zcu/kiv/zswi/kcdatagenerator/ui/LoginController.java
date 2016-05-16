@@ -66,8 +66,12 @@ public class LoginController {
         
         ApiClient client = new ApiClient();
 
+        String server = url.getText();
+        
+        String url = "https://" + server + ":4040";
+        
         try {
-            client.login(url.getText(), username.getText(), password.getText());
+            client.login(url, username.getText(), password.getText());
             
         } catch(Exception e) {
             Alert alert = new Alert(AlertType.ERROR);
@@ -76,12 +80,8 @@ public class LoginController {
             alert.setContentText("Check login credentials and URL.");
             alert.showAndWait();
         }
-
-        String domainName = url.getText();
-        int startIndex = domainName.lastIndexOf("/") + 1;
-        int endIndex = domainName.lastIndexOf(":");
         
-        LoginDataSession.getInstance().setLoginData(new LoginData(client, domainName.substring(startIndex, endIndex), username.getText(), password.getText()));
+        LoginDataSession.getInstance().setLoginData(new LoginData(client, server, username.getText(), password.getText()));
         
         ((Stage)((Node)event.getTarget()).getScene().getWindow()).close();
 

@@ -337,45 +337,6 @@ public class WindowController implements Initializable {
 	}
 
 	/**
-	 * Action will generate all datas with default values.
-	 * @param event click event on quick generate button
-	 */
-	@FXML
-	private void handleQuickGenerationAction(ActionEvent event) {
-
-		Domain[] domains = LoginDataSession.getInstance().getLoginData().client.getApi(Domains.class).get(new SearchQuery()).getList();
-
-		//Fill all fields and boxes with random and default values
-		userCountData.setText(DEFAULT_VALUE);
-		emailCountData.setText(DEFAULT_VALUE);
-		attachment.setSelected(true);
-		randomEncoding.setSelected(true);
-		flag.setSelected(false);
-		externalSender.setSelected(true);
-		emailFoldersSlider.setValue(DEFAULT_FOLDERS_VALUE);
-		tasksCountData.setText(DEFAULT_VALUE);
-		nationalChars.setSelected(false);
-		eventsCountData.setText(DEFAULT_EVENTS_VALUE);
-		fullDay.setSelected(true);
-		multipleDays.setSelected(true);
-		repeatable.setSelected(false);
-		privates.setSelected(true);
-		eventAttachment.setSelected(true);
-		invite.setSelected(false);
-		contactsCountData.setText(DEFAULT_VALUE);
-		notesCountData.setText(DEFAULT_VALUE);
-		domainBox.setValue(domains[ZERO_CONSTANT].getName());
-
-		try {
-			generate();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Action will close application.
 	 * @param event click event on exit option
 	 */
@@ -616,6 +577,25 @@ public class WindowController implements Initializable {
 		});
 
 		tabs.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+	
+		userCountData.setText(DEFAULT_VALUE);
+		emailCountData.setText(DEFAULT_VALUE);
+		attachment.setSelected(true);
+		randomEncoding.setSelected(true);
+		flag.setSelected(false);
+		externalSender.setSelected(true);
+		emailFoldersSlider.setValue(DEFAULT_FOLDERS_VALUE);
+		tasksCountData.setText(DEFAULT_VALUE);
+		nationalChars.setSelected(false);
+		eventsCountData.setText(DEFAULT_EVENTS_VALUE);
+		fullDay.setSelected(true);
+		multipleDays.setSelected(true);
+		repeatable.setSelected(false);
+		privates.setSelected(true);
+		eventAttachment.setSelected(true);
+		invite.setSelected(false);
+		contactsCountData.setText(DEFAULT_VALUE);
+		notesCountData.setText(DEFAULT_VALUE);
 	}
 
 	/**

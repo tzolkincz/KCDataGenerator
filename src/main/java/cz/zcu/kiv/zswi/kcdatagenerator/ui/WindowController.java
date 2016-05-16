@@ -243,6 +243,11 @@ public class WindowController implements Initializable {
 	/**
 	 * Constant.
 	 */
+	private static final String DEFAULT_EVENTS_VALUE = "80";
+
+	/**
+	 * Constant.
+	 */
 	private static final double DEFAULT_FOLDERS_VALUE = 38.5;
 
 	/**
@@ -350,7 +355,7 @@ public class WindowController implements Initializable {
 		emailFoldersSlider.setValue(DEFAULT_FOLDERS_VALUE);
 		tasksCountData.setText(DEFAULT_VALUE);
 		nationalChars.setSelected(false);
-		eventsCountData.setText(DEFAULT_VALUE);
+		eventsCountData.setText(DEFAULT_EVENTS_VALUE);
 		fullDay.setSelected(true);
 		multipleDays.setSelected(true);
 		repeatable.setSelected(false);

@@ -1,39 +1,25 @@
 package cz.zcu.kiv.zswi.kcdatagenerator.ui;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.xml.stream.XMLStreamException;
-
-import cz.zcu.kiv.zswi.kcdatagenerator.gen.ExchangeServiceFactory;
 import cz.zcu.kiv.zswi.kcdatagenerator.gen.GeneratedUser;
 import cz.zcu.kiv.zswi.kcdatagenerator.imp.EmlImporter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import microsoft.exchange.webservices.data.core.EwsServiceXmlWriter;
-import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.service.item.Appointment;
 import microsoft.exchange.webservices.data.core.service.item.Contact;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
@@ -86,27 +72,27 @@ public class GeneratedUsersController implements Initializable {
      * List of generated users.
      */
     private ObservableList<GeneratedUser> generatedUsers;
-    
+
     /**
      * List of generated emails.
      */
     private List<EmailMessage> emailMessages;
-    
+
     /**
      * List of generated contacts.
      */
     private List<Contact> contacts;
-    
+
     /**
      * List of generated events.
      */
     private List<Appointment> events;
-    
+
     /**
      * List of generated notes.
      */
     private List<EmailMessage> notes;
-    
+
     /**
      * List of generated tasks.
      */
@@ -116,12 +102,12 @@ public class GeneratedUsersController implements Initializable {
      * URL of exchange service.
      */
     private String ewsUrl;
-    
+
     /**
      * Container for login data of logged in user.
      */
     private LoginData loginData;
-    
+
     /**
      * Name of domain chosen in form.
      */
@@ -174,7 +160,7 @@ public class GeneratedUsersController implements Initializable {
         this.tasks = tasks;
         this.domainName = domainName;
     }
-    
+
     /**
 	 * Action will import emails(.eml files) from chosen directory on server.
 	 */
@@ -184,7 +170,10 @@ public class GeneratedUsersController implements Initializable {
 		chooser.setTitle("Open File");
 
 		File selectedDirectory = chooser.showDialog(new Stage());
-		ArrayList<File> files = new ArrayList<File>(Arrays.asList(selectedDirectory.listFiles()));
+		if (selectedDirectory == null) {
+			return; //user closed dialog and didnt selected anything
+		}
+		ArrayList<File> files = new ArrayList<>(Arrays.asList(selectedDirectory.listFiles()));
 
 		 EmlImporter importer = new EmlImporter(files);
 		 importer.importEml(generatedUsers, ewsUrl, this.domainName);
